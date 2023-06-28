@@ -1,0 +1,24 @@
+{
+    "name": "yhyasyrian/telegram-easi",
+    "description": "Telegram easi is library PHP for connect with API Telegram without difficulte",
+    "type": "library",
+        "keywords": [
+        "PHP",
+        "telegram",
+        "telegram-easi"
+    ],
+    "require": {
+        "php": ">=8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Yhyasyrian\\TelegramEasi\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Yhay Nesb",
+            "email": "yhya.syrian@gmail.com"
+        }
+    ]
+}
