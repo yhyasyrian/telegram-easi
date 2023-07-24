@@ -17,8 +17,13 @@
     },
     "authors": [
         {
-            "name": "Yhay Nesb",
-            "email": "yhya.syrian@gmail.com"
+            "name": "Yhya Nesb",
+            "email": "yhya.syrian@gmail.com",
+            "homepage": "https://www.yhyasyrian.com",
+            "role": "Developer"
         }
-    ]
+    ],
+    "support": {
+        "email": "yhya.syrian@gmail.com"
+    }
 }
