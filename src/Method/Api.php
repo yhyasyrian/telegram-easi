@@ -52,6 +52,15 @@ class Api
 
      * @return Bot
      */
+    /**
+     * Use this method to receive incoming updates using long polling (<a href="https://en.wikipedia.org/wiki/Push_technology#Long_polling">wiki</a>). Returns an Array of <a href="#update">Update</a> objects.
+     * @param int|null $offset OptionalIdentifier of the first update to be returned. Must be greater by one than the highest among the identifiers of previously received updates. By default, updates starting with the earliest unconfirmed update are returned. An update is considered confirmed as soon as getUpdates is called with an offset higher than its update_id. The negative offset can be specified to retrieve updates starting from -offset update from the end of the updates queue. All previous updates will be forgotten.
+     * @param int|null $limit OptionalLimits the number of updates to be retrieved. Values between 1-100 are accepted. Defaults to 100.
+     * @param int|null $timeout OptionalTimeout in seconds for long polling. Defaults to 0, i.e. usual short polling. Should be positive, short polling should be used for testing purposes only.
+     * @param array<string>|null $allowed_updates OptionalA JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default). If not specified, the previous setting will be used.Please note that this parameter doesn't affect updates created before the call to the getUpdates, so unwanted updates may be received for a short period of time.
+
+     * @return Bot
+     */
     public function getUpdates(int|null $offset = 0, int|null $limit = 0, int|null $timeout = 0, ?array $allowed_updates = []): Bot
     {
         return $this->call(['offset' => $offset, 'limit' => $limit, 'timeout' => $timeout, 'allowed_updates' => $allowed_updates,], __FUNCTION__);
@@ -124,7 +133,7 @@ class Api
     /**
      * This object represent a user&#39;s profile pictures.
      * @param int $total_count Total number of profile pictures the target user has
-     * @param array<Array of PhotoSize> $photos Requested profile pictures (in up to 4 sizes each)
+     * @param array<string|array> $photos Requested profile pictures (in up to 4 sizes each)
 
      * @return Bot
      */
@@ -134,7 +143,7 @@ class Api
     }
     /**
      * This object represents a <a href="/bots/features#keyboards">custom keyboard</a> with reply options (see <a href="/bots/features#keyboards">Introduction to bots</a> for details and examples).
-     * @param array<Array of KeyboardButton> $keyboard Array of button rows, each represented by an Array of KeyboardButton objects
+     * @param array<array> $keyboard Array of button rows, each represented by an Array of KeyboardButton objects
      * @param bool|null $is_persistent Optional. Requests clients to always show the keyboard when the regular keyboard is hidden. Defaults to false, in which case the custom keyboard can be hidden and opened with a keyboard icon.
      * @param bool|null $resize_keyboard Optional. Requests clients to resize the keyboard vertically for optimal fit (e.g., make the keyboard smaller if there are just two rows of buttons). Defaults to false, in which case the custom keyboard is always of the same height as the app's standard keyboard.
      * @param bool|null $one_time_keyboard Optional. Requests clients to hide the keyboard as soon as it's been used. The keyboard will still be available, but clients will automatically display the usual letter-keyboard in the chat - the user can press a special button in the input field to see the custom keyboard again. Defaults to false.
@@ -150,41 +159,18 @@ class Api
     /**
      * This object represents one button of the reply keyboard. For simple text buttons, <em>String</em> can be used instead of this object to specify the button text. The optional fields <em>web_app</em>, <em>request_user</em>, <em>request_chat</em>, <em>request_contact</em>, <em>request_location</em>, and <em>request_poll</em> are mutually exclusive.
      * @param string $text Text of the button. If none of the optional fields are used, it will be sent as a message when the button is pressed
-     * @param string|array|null $request_user Optional. If specified, pressing the button will open a list of suitable users. Tapping on any user will send their identifier to the bot in a “user_shared” service message. Available in private chats only.
-     * @param string|array|null $request_chat Optional. If specified, pressing the button will open a list of suitable chats. Tapping on a chat will send its identifier to the bot in a “chat_shared” service message. Available in private chats only.
+     * @param array|string|null $request_user Optional. If specified, pressing the button will open a list of suitable users. Tapping on any user will send their identifier to the bot in a “user_shared” service message. Available in private chats only.
+     * @param array|string|null $request_chat Optional. If specified, pressing the button will open a list of suitable chats. Tapping on a chat will send its identifier to the bot in a “chat_shared” service message. Available in private chats only.
      * @param bool|null $request_contact Optional. If True, the user's phone number will be sent as a contact when the button is pressed. Available in private chats only.
      * @param bool|null $request_location Optional. If True, the user's current location will be sent when the button is pressed. Available in private chats only.
-     * @param string|array|null $request_poll Optional. If specified, the user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only.
-     * @param string|array|null $web_app Optional. If specified, the described Web App will be launched when the button is pressed. The Web App will be able to send a “web_app_data” service message. Available in private chats only.
+     * @param array|string|null $request_poll Optional. If specified, the user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only.
+     * @param string|null $web_app Optional. If specified, the described Web App will be launched when the button is pressed. The Web App will be able to send a “web_app_data” service message. Available in private chats only.
 
      * @return Bot
      */
-    public function KeyboardButton(string $text, string|array|null $request_user, string|array|null $request_chat, bool|null $request_contact = false, bool|null $request_location = false, string|array|null $request_poll, string|array|null $web_app): Bot
+    public function KeyboardButton(string $text, array|string|null $request_user, array|string|null $request_chat, bool|null $request_contact = false, bool|null $request_location = false, array|string|null $request_poll, string|null $web_app): Bot
     {
         return $this->call(['text' => $text, 'request_user' => $request_user, 'request_chat' => $request_chat, 'request_contact' => $request_contact, 'request_location' => $request_location, 'request_poll' => $request_poll, 'web_app' => $web_app,], __FUNCTION__);
-    }
-    /**
-     * Upon receiving a message with this object, Telegram clients will remove the current custom keyboard and display the default letter-keyboard. By default, custom keyboards are displayed until a new keyboard is sent by a bot. An exception is made for one-time keyboards that are hidden immediately after the user presses a button (see <a href="#replykeyboardmarkup">ReplyKeyboardMarkup</a>).
-     * @param bool $remove_keyboard Requests clients to remove the custom keyboard (user will not be able to summon this keyboard; if you want to hide the keyboard from sight but keep it accessible, use one_time_keyboard in ReplyKeyboardMarkup)
-     * @param bool|null $selective Optional. Use this parameter if you want to remove the keyboard for specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.Example: A user votes in a poll, bot returns confirmation message in reply to the vote and removes the keyboard for that user, while still showing the keyboard with poll options to users who haven't voted yet.
-
-     * @return Bot
-     */
-    public function ReplyKeyboardRemove(bool $remove_keyboard, bool|null $selective = false): Bot
-    {
-        return $this->call(['remove_keyboard' => $remove_keyboard, 'selective' => $selective,], __FUNCTION__);
-    }
-    /**
-     * Upon receiving a message with this object, Telegram clients will display a reply interface to the user (act as if the user has selected the bot&#39;s message and tapped &#39;Reply&#39;). This can be extremely useful if you want to create user-friendly step-by-step interfaces without having to sacrifice <a href="/bots/features#privacy-mode">privacy mode</a>.
-     * @param bool $force_reply Shows reply interface to the user, as if they manually selected the bot's message and tapped 'Reply'
-     * @param string|null $input_field_placeholder Optional. The placeholder to be shown in the input field when the reply is active; 1-64 characters
-     * @param bool|null $selective Optional. Use this parameter if you want to force reply from specific users only. Targets: 1) users that are @mentioned in the text of the Message object; 2) if the bot's message is a reply (has reply_to_message_id), sender of the original message.
-
-     * @return Bot
-     */
-    public function ForceReply(bool $force_reply, string|null $input_field_placeholder = '', bool|null $selective = false): Bot
-    {
-        return $this->call(['force_reply' => $force_reply, 'input_field_placeholder' => $input_field_placeholder, 'selective' => $selective,], __FUNCTION__);
     }
     /**
      * Represents the rights of an administrator in a chat.
@@ -349,11 +335,11 @@ class Api
      * Represents a menu button, which launches a <a href="/bots/webapps">Web App</a>.
      * @param string $type Type of the button, must be web_app
      * @param string $text Text on the button
-     * @param string|array $web_app Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery.
+     * @param string $web_app Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery.
 
      * @return Bot
      */
-    public function MenuButtonWebApp(string $type, string $text, string|array $web_app): Bot
+    public function MenuButtonWebApp(string $type, string $text, string $web_app): Bot
     {
         return $this->call(['type' => $type, 'text' => $text, 'web_app' => $web_app,], __FUNCTION__);
     }
@@ -384,7 +370,7 @@ class Api
      * @param string $media File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files 
      * @param string|null $caption Optional. Caption of the photo to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the photo caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param bool|null $has_spoiler Optional. Pass True if the photo needs to be covered with a spoiler animation
 
      * @return Bot
@@ -397,10 +383,10 @@ class Api
      * Represents a video to be sent.
      * @param string $type Type of the result, must be video
      * @param string $media File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files 
-     * @paramstring|null $thumbnail Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
+     * @param string|null $thumbnail Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
      * @param string|null $caption Optional. Caption of the video to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the video caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param int|null $width Optional. Video width
      * @param int|null $height Optional. Video height
      * @param int|null $duration Optional. Video duration in seconds
@@ -417,10 +403,10 @@ class Api
      * Represents an animation file (GIF or H.264/MPEG-4 AVC video without sound) to be sent.
      * @param string $type Type of the result, must be animation
      * @param string $media File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files 
-     * @paramstring|null $thumbnail Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
+     * @param string|null $thumbnail Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
      * @param string|null $caption Optional. Caption of the animation to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the animation caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param int|null $width Optional. Animation width
      * @param int|null $height Optional. Animation height
      * @param int|null $duration Optional. Animation duration in seconds
@@ -436,10 +422,10 @@ class Api
      * Represents an audio file to be treated as music to be sent.
      * @param string $type Type of the result, must be audio
      * @param string $media File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files 
-     * @paramstring|null $thumbnail Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
+     * @param string|null $thumbnail Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
      * @param string|null $caption Optional. Caption of the audio to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the audio caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param int|null $duration Optional. Duration of the audio in seconds
      * @param string|null $performer Optional. Performer of the audio
      * @param string|null $title Optional. Title of the audio
@@ -454,10 +440,10 @@ class Api
      * Represents a general file to be sent.
      * @param string $type Type of the result, must be document
      * @param string $media File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files 
-     * @paramstring|null $thumbnail Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
+     * @param string|null $thumbnail Optional. Thumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
      * @param string|null $caption Optional. Caption of the document to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the document caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param bool|null $disable_content_type_detection Optional. Disables automatic server-side content type detection for files uploaded using multipart/form-data. Always True, if the document is sent as part of an album.
 
      * @return Bot
@@ -472,7 +458,7 @@ class Api
      * @param int|null $message_thread_id OptionalUnique identifier for the target message thread (topic) of the forum; for forum supergroups only
      * @param string $text YesText of the message to be sent, 1-4096 characters after entities parsing
      * @param string|null $parse_mode OptionalMode for parsing entities in the message text. See formatting options for more details.
-     * @param array<MessageEntity>|null $entities OptionalA JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode
+     * @param array<string|array>|null $entities OptionalA JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode
      * @param bool|null $disable_web_page_preview OptionalDisables link previews for links in this message
      * @param bool|null $disable_notification OptionalSends the message silently. Users will receive a notification with no sound.
      * @param bool|null $protect_content OptionalProtects the contents of the sent message from forwarding and saving
@@ -482,7 +468,7 @@ class Api
 
      * @return Bot
      */
-    public function string(int|string $chat_id, int|null $message_thread_id = 0, string $text, string|null $parse_mode = '', ?array $entities = [], bool|null $disable_web_page_preview = false, bool|null $disable_notification = false, bool|null $protect_content = false, int|null $reply_to_message_id = 0, bool|null $allow_sending_without_reply = false, array|string|null $reply_markup): Bot
+    public function sendmessage(int|string $chat_id, int|null $message_thread_id = 0, string $text, string|null $parse_mode = '', ?array $entities = [], bool|null $disable_web_page_preview = false, bool|null $disable_notification = false, bool|null $protect_content = false, int|null $reply_to_message_id = 0, bool|null $allow_sending_without_reply = false, array|string|null $reply_markup): Bot
     {
         return $this->call(['chat_id' => $chat_id, 'message_thread_id' => $message_thread_id, 'text' => $text, 'parse_mode' => $parse_mode, 'entities' => $entities, 'disable_web_page_preview' => $disable_web_page_preview, 'disable_notification' => $disable_notification, 'protect_content' => $protect_content, 'reply_to_message_id' => $reply_to_message_id, 'allow_sending_without_reply' => $allow_sending_without_reply, 'reply_markup' => $reply_markup,], __FUNCTION__);
     }
@@ -494,7 +480,7 @@ class Api
      * @param int $message_id YesMessage identifier in the chat specified in from_chat_id
      * @param string|null $caption OptionalNew caption for media, 0-1024 characters after entities parsing. If not specified, the original caption is kept
      * @param string|null $parse_mode OptionalMode for parsing entities in the new caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the new caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the new caption, which can be specified instead of parse_mode
      * @param bool|null $disable_notification OptionalSends the message silently. Users will receive a notification with no sound.
      * @param bool|null $protect_content OptionalProtects the contents of the sent message from forwarding and saving
      * @param int|null $reply_to_message_id OptionalIf the message is a reply, ID of the original message
@@ -511,10 +497,10 @@ class Api
      * Use this method to send photos. On success, the sent <a href="#message">Message</a> is returned.
      * @param int|string $chat_id YesUnique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int|null $message_thread_id OptionalUnique identifier for the target message thread (topic) of the forum; for forum supergroups only
-     * @paramstring $photo YesPhoto to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. The photo must be at most 10 MB in size. The photo's width and height must not exceed 10000 in total. Width and height ratio must be at most 20. More information on Sending Files 
+     * @param string $photo YesPhoto to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a photo from the Internet, or upload a new photo using multipart/form-data. The photo must be at most 10 MB in size. The photo's width and height must not exceed 10000 in total. Width and height ratio must be at most 20. More information on Sending Files 
      * @param string|null $caption OptionalPhoto caption (may also be used when resending photos by file_id), 0-1024 characters after entities parsing
      * @param string|null $parse_mode OptionalMode for parsing entities in the photo caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param bool|null $has_spoiler OptionalPass True if the photo needs to be covered with a spoiler animation
      * @param bool|null $disable_notification OptionalSends the message silently. Users will receive a notification with no sound.
      * @param bool|null $protect_content OptionalProtects the contents of the sent message from forwarding and saving
@@ -532,14 +518,14 @@ class Api
      * Use this method to send audio files, if you want Telegram clients to display them in the music player. Your audio must be in the .MP3 or .M4A format. On success, the sent <a href="#message">Message</a> is returned. Bots can currently send audio files of up to 50 MB in size, this limit may be changed in the future.</p><p>For sending voice messages, use the <a href="#sendvoice">sendVoice</a> method instead.
      * @param int|string $chat_id YesUnique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int|null $message_thread_id OptionalUnique identifier for the target message thread (topic) of the forum; for forum supergroups only
-     * @paramstring $audio YesAudio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files 
+     * @param string $audio YesAudio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an audio file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files 
      * @param string|null $caption OptionalAudio caption, 0-1024 characters after entities parsing
      * @param string|null $parse_mode OptionalMode for parsing entities in the audio caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param int|null $duration OptionalDuration of the audio in seconds
      * @param string|null $performer OptionalPerformer
      * @param string|null $title OptionalTrack name
-     * @paramstring|null $thumbnail OptionalThumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
+     * @param string|null $thumbnail OptionalThumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
      * @param bool|null $disable_notification OptionalSends the message silently. Users will receive a notification with no sound.
      * @param bool|null $protect_content OptionalProtects the contents of the sent message from forwarding and saving
      * @param int|null $reply_to_message_id OptionalIf the message is a reply, ID of the original message
@@ -556,11 +542,11 @@ class Api
      * Use this method to send general files. On success, the sent <a href="#message">Message</a> is returned. Bots can currently send files of any type of up to 50 MB in size, this limit may be changed in the future.
      * @param int|string $chat_id YesUnique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int|null $message_thread_id OptionalUnique identifier for the target message thread (topic) of the forum; for forum supergroups only
-     * @paramstring $document YesFile to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files 
-     * @paramstring|null $thumbnail OptionalThumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
+     * @param string $document YesFile to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files 
+     * @param string|null $thumbnail OptionalThumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
      * @param string|null $caption OptionalDocument caption (may also be used when resending documents by file_id), 0-1024 characters after entities parsing
      * @param string|null $parse_mode OptionalMode for parsing entities in the document caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param bool|null $disable_content_type_detection OptionalDisables automatic server-side content type detection for files uploaded using multipart/form-data
      * @param bool|null $disable_notification OptionalSends the message silently. Users will receive a notification with no sound.
      * @param bool|null $protect_content OptionalProtects the contents of the sent message from forwarding and saving
@@ -578,14 +564,14 @@ class Api
      * Use this method to send video files, Telegram clients support MPEG4 videos (other formats may be sent as <a href="#document">Document</a>). On success, the sent <a href="#message">Message</a> is returned. Bots can currently send video files of up to 50 MB in size, this limit may be changed in the future.
      * @param int|string $chat_id YesUnique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int|null $message_thread_id OptionalUnique identifier for the target message thread (topic) of the forum; for forum supergroups only
-     * @paramstring $video YesVideo to send. Pass a file_id as String to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. More information on Sending Files 
+     * @param string $video YesVideo to send. Pass a file_id as String to send a video that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a video from the Internet, or upload a new video using multipart/form-data. More information on Sending Files 
      * @param int|null $duration OptionalDuration of sent video in seconds
      * @param int|null $width OptionalVideo width
      * @param int|null $height OptionalVideo height
-     * @paramstring|null $thumbnail OptionalThumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
+     * @param string|null $thumbnail OptionalThumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
      * @param string|null $caption OptionalVideo caption (may also be used when resending videos by file_id), 0-1024 characters after entities parsing
      * @param string|null $parse_mode OptionalMode for parsing entities in the video caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param bool|null $has_spoiler OptionalPass True if the video needs to be covered with a spoiler animation
      * @param bool|null $supports_streaming OptionalPass True if the uploaded video is suitable for streaming
      * @param bool|null $disable_notification OptionalSends the message silently. Users will receive a notification with no sound.
@@ -604,14 +590,14 @@ class Api
      * Use this method to send animation files (GIF or H.264/MPEG-4 AVC video without sound). On success, the sent <a href="#message">Message</a> is returned. Bots can currently send animation files of up to 50 MB in size, this limit may be changed in the future.
      * @param int|string $chat_id YesUnique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int|null $message_thread_id OptionalUnique identifier for the target message thread (topic) of the forum; for forum supergroups only
-     * @paramstring $animation YesAnimation to send. Pass a file_id as String to send an animation that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an animation from the Internet, or upload a new animation using multipart/form-data. More information on Sending Files 
+     * @param string $animation YesAnimation to send. Pass a file_id as String to send an animation that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get an animation from the Internet, or upload a new animation using multipart/form-data. More information on Sending Files 
      * @param int|null $duration OptionalDuration of sent animation in seconds
      * @param int|null $width OptionalAnimation width
      * @param int|null $height OptionalAnimation height
-     * @paramstring|null $thumbnail OptionalThumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
+     * @param string|null $thumbnail OptionalThumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
      * @param string|null $caption OptionalAnimation caption (may also be used when resending animation by file_id), 0-1024 characters after entities parsing
      * @param string|null $parse_mode OptionalMode for parsing entities in the animation caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param bool|null $has_spoiler OptionalPass True if the animation needs to be covered with a spoiler animation
      * @param bool|null $disable_notification OptionalSends the message silently. Users will receive a notification with no sound.
      * @param bool|null $protect_content OptionalProtects the contents of the sent message from forwarding and saving
@@ -629,10 +615,10 @@ class Api
      * Use this method to send audio files, if you want Telegram clients to display the file as a playable voice message. For this to work, your audio must be in an .OGG file encoded with OPUS (other formats may be sent as <a href="#audio">Audio</a> or <a href="#document">Document</a>). On success, the sent <a href="#message">Message</a> is returned. Bots can currently send voice messages of up to 50 MB in size, this limit may be changed in the future.
      * @param int|string $chat_id YesUnique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int|null $message_thread_id OptionalUnique identifier for the target message thread (topic) of the forum; for forum supergroups only
-     * @paramstring $voice YesAudio file to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files 
+     * @param string $voice YesAudio file to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files 
      * @param string|null $caption OptionalVoice message caption, 0-1024 characters after entities parsing
      * @param string|null $parse_mode OptionalMode for parsing entities in the voice message caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param int|null $duration OptionalDuration of the voice message in seconds
      * @param bool|null $disable_notification OptionalSends the message silently. Users will receive a notification with no sound.
      * @param bool|null $protect_content OptionalProtects the contents of the sent message from forwarding and saving
@@ -650,10 +636,10 @@ class Api
      * As of <a href="https://telegram.org/blog/video-messages-and-telescope">v.4.0</a>, Telegram clients support rounded square MPEG4 videos of up to 1 minute long. Use this method to send video messages. On success, the sent <a href="#message">Message</a> is returned.
      * @param int|string $chat_id YesUnique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int|null $message_thread_id OptionalUnique identifier for the target message thread (topic) of the forum; for forum supergroups only
-     * @paramstring $video_note YesVideo note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. More information on Sending Files . Sending video notes by a URL is currently unsupported
+     * @param string $video_note YesVideo note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended) or upload a new video using multipart/form-data. More information on Sending Files . Sending video notes by a URL is currently unsupported
      * @param int|null $duration OptionalDuration of sent video in seconds
      * @param int|null $length OptionalVideo width and height, i.e. diameter of the video message
-     * @paramstring|null $thumbnail OptionalThumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
+     * @param string|null $thumbnail OptionalThumbnail of the file sent; can be ignored if thumbnail generation for the file is supported server-side. The thumbnail should be in JPEG format and less than 200 kB in size. A thumbnail's width and height should not exceed 320. Ignored if the file is not uploaded using multipart/form-data. Thumbnails can't be reused and can be only uploaded as a new file, so you can pass “attach://<file_attach_name>” if the thumbnail was uploaded using multipart/form-data under <file_attach_name>. More information on Sending Files 
      * @param bool|null $disable_notification OptionalSends the message silently. Users will receive a notification with no sound.
      * @param bool|null $protect_content OptionalProtects the contents of the sent message from forwarding and saving
      * @param int|null $reply_to_message_id OptionalIf the message is a reply, ID of the original message
@@ -760,7 +746,7 @@ class Api
      * @param int|null $correct_option_id Optional0-based identifier of the correct answer option, required for polls in quiz mode
      * @param string|null $explanation OptionalText that is shown when a user chooses an incorrect answer or taps on the lamp icon in a quiz-style poll, 0-200 characters with at most 2 line feeds after entities parsing
      * @param string|null $explanation_parse_mode OptionalMode for parsing entities in the explanation. See formatting options for more details.
-     * @param array<MessageEntity>|null $explanation_entities OptionalA JSON-serialized list of special entities that appear in the poll explanation, which can be specified instead of parse_mode
+     * @param array<string|array>|null $explanation_entities OptionalA JSON-serialized list of special entities that appear in the poll explanation, which can be specified instead of parse_mode
      * @param int|null $open_period OptionalAmount of time in seconds the poll will be active after creation, 5-600. Can't be used together with close_date.
      * @param int|null $close_date OptionalPoint in time (Unix timestamp) when the poll will be automatically closed. Must be at least 5 and no more than 600 seconds in the future. Can't be used together with open_period.
      * @param bool|null $is_closed OptionalPass True if the poll needs to be immediately closed. This can be useful for poll preview.
@@ -856,13 +842,13 @@ class Api
      * Use this method to restrict a user in a supergroup. The bot must be an administrator in the supergroup for this to work and must have the appropriate administrator rights. Pass <em>True</em> for all permissions to lift restrictions from a user. Returns <em>True</em> on success.
      * @param int|string $chat_id YesUnique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
      * @param int $user_id YesUnique identifier of the target user
-     * @param array|string $permissions YesA JSON-serialized object for new user permissions
+     * @param string|array $permissions YesA JSON-serialized object for new user permissions
      * @param bool|null $use_independent_chat_permissions OptionalPass True if chat permissions are set independently. Otherwise, the can_send_other_messages and can_add_web_page_previews permissions will imply the can_send_messages, can_send_audios, can_send_documents, can_send_photos, can_send_videos, can_send_video_notes, and can_send_voice_notes permissions; the can_send_polls permission will imply the can_send_messages permission.
      * @param int|null $until_date OptionalDate when restrictions will be lifted for the user, unix time. If user is restricted for more than 366 days or less than 30 seconds from the current time, they are considered to be restricted forever
 
      * @return Bot
      */
-    public function restrictChatMember(int|string $chat_id, int $user_id, array|string $permissions, bool|null $use_independent_chat_permissions = false, int|null $until_date = 0): Bot
+    public function restrictChatMember(int|string $chat_id, int $user_id, string|array $permissions, bool|null $use_independent_chat_permissions = false, int|null $until_date = 0): Bot
     {
         return $this->call(['chat_id' => $chat_id, 'user_id' => $user_id, 'permissions' => $permissions, 'use_independent_chat_permissions' => $use_independent_chat_permissions, 'until_date' => $until_date,], __FUNCTION__);
     }
@@ -926,12 +912,12 @@ class Api
     /**
      * Use this method to set default chat permissions for all members. The bot must be an administrator in the group or a supergroup for this to work and must have the <em>can_restrict_members</em> administrator rights. Returns <em>True</em> on success.
      * @param int|string $chat_id YesUnique identifier for the target chat or username of the target supergroup (in the format @supergroupusername)
-     * @param array|string $permissions YesA JSON-serialized object for new default chat permissions
+     * @param string|array $permissions YesA JSON-serialized object for new default chat permissions
      * @param bool|null $use_independent_chat_permissions OptionalPass True if chat permissions are set independently. Otherwise, the can_send_other_messages and can_add_web_page_previews permissions will imply the can_send_messages, can_send_audios, can_send_documents, can_send_photos, can_send_videos, can_send_video_notes, and can_send_voice_notes permissions; the can_send_polls permission will imply the can_send_messages permission.
 
      * @return Bot
      */
-    public function setChatPermissions(int|string $chat_id, array|string $permissions, bool|null $use_independent_chat_permissions = false): Bot
+    public function setChatPermissions(int|string $chat_id, string|array $permissions, bool|null $use_independent_chat_permissions = false): Bot
     {
         return $this->call(['chat_id' => $chat_id, 'permissions' => $permissions, 'use_independent_chat_permissions' => $use_independent_chat_permissions,], __FUNCTION__);
     }
@@ -1278,35 +1264,35 @@ class Api
     }
     /**
      * Use this method to send answers to callback queries sent from <a href="/bots/features#inline-keyboards">inline keyboards</a>. The answer will be displayed to the user as a notification at the top of the chat screen or as an alert. On success, <em>True</em> is returned.</p><blockquote><p>Alternatively, the user can be redirected to the specified Game URL. For this option to work, you must first create a game for your bot via <a href="https://t.me/botfather">@BotFather</a> and accept the terms. Otherwise, you may use links like <code>t.me/your_bot?start=XXXX</code> that open your bot with a parameter.</p></blockquote><table class="table"><thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody><tr><td>callback_query_id</td><td>String</td><td>Yes</td><td>Unique identifier for the query to be answered</td></tr><tr><td>text</td><td>String</td><td>Optional</td><td>Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters</td></tr><tr><td>show_alert</td><td>Boolean</td><td>Optional</td><td>If <em>True</em>, an alert will be shown by the client instead of a notification at the top of the chat screen. Defaults to <em>false</em>.</td></tr><tr><td>url</td><td>String</td><td>Optional</td><td>URL that will be opened by the user&#39;s client. If you have created a <a href="#game">Game</a> and accepted the conditions via <a href="https://t.me/botfather">@BotFather</a>, specify the URL that opens your game - note that this will only work if the query comes from a <a href="#inlinekeyboardbutton"><em>callback_game</em></a> button.<br><br>Otherwise, you may use links like <code>t.me/your_bot?start=XXXX</code> that open your bot with a parameter.</td></tr><tr><td>cache_time</td><td>Integer</td><td>Optional</td><td>The maximum amount of time in seconds that the result of the callback query may be cached client-side. Telegram apps will support caching starting in version 3.14. Defaults to 0.</td></tr></tbody></table><h4><a class="anchor" name="setmycommands" href="#setmycommands"><i class="anchor-icon"></i></a>setMyCommands</h4><p>Use this method to change the list of the bot&#39;s commands. See <a href="/bots/features#commands">this manual</a> for more details about bot commands. Returns <em>True</em> on success.
-     * @param array<BotCommand> $commands YesA JSON-serialized list of bot commands to be set as the list of the bot's commands. At most 100 commands can be specified.
-     * @param array|string|null $scope OptionalA JSON-serialized object, describing scope of users for which the commands are relevant. Defaults to BotCommandScopeDefault.
+     * @param array<string|array> $commands YesA JSON-serialized list of bot commands to be set as the list of the bot's commands. At most 100 commands can be specified.
+     * @param string|array|null $scope OptionalA JSON-serialized object, describing scope of users for which the commands are relevant. Defaults to BotCommandScopeDefault.
      * @param string|null $language_code OptionalA two-letter ISO 639-1 language code. If empty, commands will be applied to all users from the given scope, for whose language there are no dedicated commands
 
      * @return Bot
      */
-    public function answerCallbackQuery(?array $commands = [], array|string|null $scope, string|null $language_code = ''): Bot
+    public function answerCallbackQuery(?array $commands = [], string|array|null $scope, string|null $language_code = ''): Bot
     {
         return $this->call(['commands' => $commands, 'scope' => $scope, 'language_code' => $language_code,], __FUNCTION__);
     }
     /**
      * Use this method to delete the list of the bot&#39;s commands for the given scope and user language. After deletion, <a href="#determining-list-of-commands">higher level commands</a> will be shown to affected users. Returns <em>True</em> on success.
-     * @param array|string|null $scope OptionalA JSON-serialized object, describing scope of users for which the commands are relevant. Defaults to BotCommandScopeDefault.
+     * @param string|array|null $scope OptionalA JSON-serialized object, describing scope of users for which the commands are relevant. Defaults to BotCommandScopeDefault.
      * @param string|null $language_code OptionalA two-letter ISO 639-1 language code. If empty, commands will be applied to all users from the given scope, for whose language there are no dedicated commands
 
      * @return Bot
      */
-    public function deleteMyCommands(array|string|null $scope, string|null $language_code = ''): Bot
+    public function deleteMyCommands(string|array|null $scope, string|null $language_code = ''): Bot
     {
         return $this->call(['scope' => $scope, 'language_code' => $language_code,], __FUNCTION__);
     }
     /**
      * Use this method to get the current list of the bot&#39;s commands for the given scope and user language. Returns an Array of <a href="#botcommand">BotCommand</a> objects. If commands aren&#39;t set, an empty list is returned.
-     * @param array|string|null $scope OptionalA JSON-serialized object, describing scope of users. Defaults to BotCommandScopeDefault.
+     * @param string|array|null $scope OptionalA JSON-serialized object, describing scope of users. Defaults to BotCommandScopeDefault.
      * @param string|null $language_code OptionalA two-letter ISO 639-1 language code or an empty string
 
      * @return Bot
      */
-    public function getMyCommands(array|string|null $scope, string|null $language_code = ''): Bot
+    public function getMyCommands(string|array|null $scope, string|null $language_code = ''): Bot
     {
         return $this->call(['scope' => $scope, 'language_code' => $language_code,], __FUNCTION__);
     }
@@ -1376,11 +1362,11 @@ class Api
     /**
      * Use this method to change the bot&#39;s menu button in a private chat, or the default menu button. Returns <em>True</em> on success.
      * @param int|null $chat_id OptionalUnique identifier for the target private chat. If not specified, default bot's menu button will be changed
-     * @param array|string|null $menu_button OptionalA JSON-serialized object for the bot's new menu button. Defaults to MenuButtonDefault
+     * @param string|array|null $menu_button OptionalA JSON-serialized object for the bot's new menu button. Defaults to MenuButtonDefault
 
      * @return Bot
      */
-    public function setChatMenuButton(int|null $chat_id = 0, array|string|null $menu_button): Bot
+    public function setChatMenuButton(int|null $chat_id = 0, string|array|null $menu_button): Bot
     {
         return $this->call(['chat_id' => $chat_id, 'menu_button' => $menu_button,], __FUNCTION__);
     }
@@ -1396,12 +1382,12 @@ class Api
     }
     /**
      * Use this method to change the default administrator rights requested by the bot when it&#39;s added as an administrator to groups or channels. These rights will be suggested to users, but they are free to modify the list before adding the bot. Returns <em>True</em> on success.
-     * @param array|string|null $rights OptionalA JSON-serialized object describing new default administrator rights. If not specified, the default administrator rights will be cleared.
+     * @param string|array|null $rights OptionalA JSON-serialized object describing new default administrator rights. If not specified, the default administrator rights will be cleared.
      * @param bool|null $for_channels OptionalPass True to change the default administrator rights of the bot in channels. Otherwise, the default administrator rights of the bot for groups and supergroups will be changed.
 
      * @return Bot
      */
-    public function setMyDefaultAdministratorRights(array|string|null $rights, bool|null $for_channels = false): Bot
+    public function setMyDefaultAdministratorRights(string|array|null $rights, bool|null $for_channels = false): Bot
     {
         return $this->call(['rights' => $rights, 'for_channels' => $for_channels,], __FUNCTION__);
     }
@@ -1422,7 +1408,7 @@ class Api
      * @param string|null $inline_message_id OptionalRequired if chat_id and message_id are not specified. Identifier of the inline message
      * @param string|null $caption OptionalNew caption of the message, 0-1024 characters after entities parsing
      * @param string|null $parse_mode OptionalMode for parsing entities in the message caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities OptionalA JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param array|string|null $reply_markup OptionalA JSON-serialized object for an inline keyboard.
 
      * @return Bot
@@ -1436,12 +1422,12 @@ class Api
      * @param int|string|null $chat_id OptionalRequired if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int|null $message_id OptionalRequired if inline_message_id is not specified. Identifier of the message to edit
      * @param string|null $inline_message_id OptionalRequired if chat_id and message_id are not specified. Identifier of the inline message
-     * @param array|string $media YesA JSON-serialized object for a new media content of the message
+     * @param string|array$media YesA JSON-serialized object for a new media content of the message
      * @param array|string|null $reply_markup OptionalA JSON-serialized object for a new inline keyboard.
 
      * @return Bot
      */
-    public function editMessageMedia(int|string|null $chat_id, int|null $message_id = 0, string|null $inline_message_id = '', array|string $media, array|string|null $reply_markup): Bot
+    public function editMessageMedia(int|string|null $chat_id, int|null $message_id = 0, string|null $inline_message_id = '', string|array $media, array|string|null $reply_markup): Bot
     {
         return $this->call(['chat_id' => $chat_id, 'message_id' => $message_id, 'inline_message_id' => $inline_message_id, 'media' => $media, 'reply_markup' => $reply_markup,], __FUNCTION__);
     }
@@ -1519,18 +1505,18 @@ class Api
      * @param string $sticker_type Type of stickers in the set, currently one of “regular”, “mask”, “custom_emoji”
      * @param bool $is_animated True, if the sticker set contains animated stickers
      * @param bool $is_video True, if the sticker set contains video stickers
-     * @param array<Sticker> $stickers List of all set stickers
-     * @param array|string|null $thumbnail Optional. Sticker set thumbnail in the .WEBP, .TGS, or .WEBM format
+     * @param array<string|array> $stickers List of all set stickers
+     * @param string|array|null $thumbnail Optional. Sticker set thumbnail in the .WEBP, .TGS, or .WEBM format
 
      * @return Bot
      */
-    public function StickerSet(string $name, string $title, string $sticker_type, bool $is_animated, bool $is_video, ?array $stickers = [], array|string|null $thumbnail): Bot
+    public function StickerSet(string $name, string $title, string $sticker_type, bool $is_animated, bool $is_video, ?array $stickers = [], string|array|null $thumbnail): Bot
     {
         return $this->call(['name' => $name, 'title' => $title, 'sticker_type' => $sticker_type, 'is_animated' => $is_animated, 'is_video' => $is_video, 'stickers' => $stickers, 'thumbnail' => $thumbnail,], __FUNCTION__);
     }
     /**
      * This object describes a sticker to be added to a sticker set.
-     * @paramstring $sticker The added sticker. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, upload a new one using multipart/form-data, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. Animated and video stickers can't be uploaded via HTTP URL. More information on Sending Files 
+     * @param string $sticker The added sticker. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, upload a new one using multipart/form-data, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. Animated and video stickers can't be uploaded via HTTP URL. More information on Sending Files 
      * @param array<string> $emoji_list List of 1-20 emoji associated with the sticker
      * @param string|array|null $mask_position Optional. Position where the mask should be placed on faces. For “mask” stickers only.
      * @param array<string>|null $keywords Optional. List of 0-20 search keywords for the sticker with total length of up to 64 characters. For “regular” and “custom_emoji” stickers only.
@@ -1545,7 +1531,7 @@ class Api
      * Use this method to send static .WEBP, <a href="https://telegram.org/blog/animated-stickers">animated</a> .TGS, or <a href="https://telegram.org/blog/video-stickers-better-reactions">video</a> .WEBM stickers. On success, the sent <a href="#message">Message</a> is returned.
      * @param int|string $chat_id YesUnique identifier for the target chat or username of the target channel (in the format @channelusername)
      * @param int|null $message_thread_id OptionalUnique identifier for the target message thread (topic) of the forum; for forum supergroups only
-     * @paramstring $sticker YesSticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a .WEBP sticker from the Internet, or upload a new .WEBP or .TGS sticker using multipart/form-data. More information on Sending Files . Video stickers can only be sent by a file_id. Animated stickers can't be sent via an HTTP URL.
+     * @param string $sticker YesSticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a String for Telegram to get a .WEBP sticker from the Internet, or upload a new .WEBP or .TGS sticker using multipart/form-data. More information on Sending Files . Video stickers can only be sent by a file_id. Animated stickers can't be sent via an HTTP URL.
      * @param string|null $emoji OptionalEmoji associated with the sticker; only for just uploaded stickers
      * @param bool|null $disable_notification OptionalSends the message silently. Users will receive a notification with no sound.
      * @param bool|null $protect_content OptionalProtects the contents of the sent message from forwarding and saving
@@ -1596,7 +1582,7 @@ class Api
      * @param int $user_id YesUser identifier of created sticker set owner
      * @param string $name YesShort name of sticker set, to be used in t.me/addstickers/ URLs (e.g., animals). Can contain only English letters, digits and underscores. Must begin with a letter, can't contain consecutive underscores and must end in "_by_<bot_username>". <bot_username> is case insensitive. 1-64 characters.
      * @param string $title YesSticker set title, 1-64 characters
-     * @param array<InputSticker> $stickers YesA JSON-serialized list of 1-50 initial stickers to be added to the sticker set
+     * @param array<string|array> $stickers YesA JSON-serialized list of 1-50 initial stickers to be added to the sticker set
      * @param string $sticker_format YesFormat of stickers in the set, must be one of “static”, “animated”, “video”
      * @param string|null $sticker_type OptionalType of stickers in the set, pass “regular”, “mask”, or “custom_emoji”. By default, a regular sticker set is created.
      * @param bool|null $needs_repainting OptionalPass True if stickers in the sticker set must be repainted to the color of text when used in messages, the accent color if used as emoji status, white on chat photos, or another appropriate color based on context; for custom emoji sticker sets only
@@ -1611,11 +1597,11 @@ class Api
      * Use this method to add a new sticker to a set created by the bot. The format of the added sticker must match the format of the other stickers in the set. Emoji sticker sets can have up to 200 stickers. Animated and video sticker sets can have up to 50 stickers. Static sticker sets can have up to 120 stickers. Returns <em>True</em> on success.
      * @param int $user_id YesUser identifier of sticker set owner
      * @param string $name YesSticker set name
-     * @param array|string $sticker YesA JSON-serialized object with information about the added sticker. If exactly the same sticker had already been added to the set, then the set isn't changed.
+     * @param string|array $sticker YesA JSON-serialized object with information about the added sticker. If exactly the same sticker had already been added to the set, then the set isn't changed.
 
      * @return Bot
      */
-    public function addStickerToSet(int $user_id, string $name, array|string $sticker): Bot
+    public function addStickerToSet(int $user_id, string $name, string|array $sticker): Bot
     {
         return $this->call(['user_id' => $user_id, 'name' => $name, 'sticker' => $sticker,], __FUNCTION__);
     }
@@ -1663,7 +1649,7 @@ class Api
         return $this->call(['sticker' => $sticker, 'keywords' => $keywords,], __FUNCTION__);
     }
     /**
-     * Use this method to change the <a href="#string|array">mask position</a> of a mask sticker. The sticker must belong to a sticker set that was created by the bot. Returns <em>True</em> on success.
+     * Use this method to change the <a href="#maskposition">mask position</a> of a mask sticker. The sticker must belong to a sticker set that was created by the bot. Returns <em>True</em> on success.
      * @param string $sticker YesFile identifier of the sticker
      * @param string|array|null $mask_position OptionalA JSON-serialized object with the position where the mask should be placed on faces. Omit the parameter to remove the mask position.
 
@@ -1688,7 +1674,7 @@ class Api
      * Use this method to set the thumbnail of a regular or mask sticker set. The format of the thumbnail file must match the format of the stickers in the set. Returns <em>True</em> on success.
      * @param string $name YesSticker set name
      * @param int $user_id YesUser identifier of the sticker set owner
-     * @paramstring|null $thumbnail OptionalA .WEBP or .PNG image with the thumbnail, must be up to 128 kilobytes in size and have a width and height of exactly 100px, or a .TGS animation with a thumbnail up to 32 kilobytes in size (see https://core.telegram.org/stickers#animated-sticker-requirements for animated sticker technical requirements), or a WEBM video with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/stickers#video-sticker-requirements for video sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files . Animated and video sticker set thumbnails can't be uploaded via HTTP URL. If omitted, then the thumbnail is dropped and the first sticker is used as the thumbnail.
+     * @param string|null $thumbnail OptionalA .WEBP or .PNG image with the thumbnail, must be up to 128 kilobytes in size and have a width and height of exactly 100px, or a .TGS animation with a thumbnail up to 32 kilobytes in size (see https://core.telegram.org/stickers#animated-sticker-requirements for animated sticker technical requirements), or a WEBM video with the thumbnail up to 32 kilobytes in size; see https://core.telegram.org/stickers#video-sticker-requirements for video sticker technical requirements. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, or upload a new one using multipart/form-data. More information on Sending Files . Animated and video sticker set thumbnails can't be uploaded via HTTP URL. If omitted, then the thumbnail is dropped and the first sticker is used as the thumbnail.
 
      * @return Bot
      */
@@ -1720,27 +1706,27 @@ class Api
     /**
      * Use this method to send answers to an inline query. On success, <em>True</em> is returned.<br>No more than <strong>50</strong> results per query are allowed.
      * @param string $inline_query_id YesUnique identifier for the answered query
-     * @param array<InlineQueryResult> $results YesA JSON-serialized array of results for the inline query
+     * @param array<string|array> $results YesA JSON-serialized array of results for the inline query
      * @param int|null $cache_time OptionalThe maximum amount of time in seconds that the result of the inline query may be cached on the server. Defaults to 300.
      * @param bool|null $is_personal OptionalPass True if results may be cached on the server side only for the user that sent the query. By default, results may be returned to any user who sends the same query.
      * @param string|null $next_offset OptionalPass the offset that a client should send in the next query with the same text to receive more results. Pass an empty string if there are no more results or if you don't support pagination. Offset length can't exceed 64 bytes.
-     * @param array|string|null $button OptionalA JSON-serialized object describing a button to be shown above inline query results
+     * @param string|array|null $button OptionalA JSON-serialized object describing a button to be shown above inline query results
 
      * @return Bot
      */
-    public function answerInlineQuery(string $inline_query_id, ?array $results = [], int|null $cache_time = 0, bool|null $is_personal = false, string|null $next_offset = '', array|string|null $button): Bot
+    public function answerInlineQuery(string $inline_query_id, ?array $results = [], int|null $cache_time = 0, bool|null $is_personal = false, string|null $next_offset = '', string|array|null $button): Bot
     {
         return $this->call(['inline_query_id' => $inline_query_id, 'results' => $results, 'cache_time' => $cache_time, 'is_personal' => $is_personal, 'next_offset' => $next_offset, 'button' => $button,], __FUNCTION__);
     }
     /**
      * This object represents a button to be shown above inline query results. You <strong>must</strong> use exactly one of the optional fields.
      * @param string $text Label text on the button
-     * @param string|array|null $web_app Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to switch back to the inline mode using the method switchInlineQuery inside the Web App.
+     * @param string|null $web_app Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to switch back to the inline mode using the method switchInlineQuery inside the Web App.
      * @param string|null $start_parameter Optional. Deep-linking parameter for the /start message sent to the bot when a user presses the button. 1-64 characters, only A-Z, a-z, 0-9, _ and - are allowed.Example: An inline bot that sends YouTube videos can ask the user to connect the bot to their YouTube account to adapt search results accordingly. To do this, it displays a 'Connect your YouTube account' button above the results, or even before showing any. The user presses the button, switches to a private chat with the bot and, in doing so, passes a start parameter that instructs the bot to return an OAuth link. Once done, the bot can offer a switch_inline button so that the user can easily return to the chat where they wanted to use the bot's inline capabilities.
 
      * @return Bot
      */
-    public function InlineQueryResultsButton(string $text, string|array|null $web_app, string|null $start_parameter = ''): Bot
+    public function InlineQueryResultsButton(string $text, string|null $web_app, string|null $start_parameter = ''): Bot
     {
         return $this->call(['text' => $text, 'web_app' => $web_app, 'start_parameter' => $start_parameter,], __FUNCTION__);
     }
@@ -1749,7 +1735,7 @@ class Api
      * @param string $type Type of the result, must be article
      * @param string $id Unique identifier for this result, 1-64 Bytes
      * @param string $title Title of the result
-     * @param array|string $input_message_content Content of the message to be sent
+     * @param string|array $input_message_content Content of the message to be sent
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
      * @param string|null $url Optional. URL of the result
      * @param bool|null $hide_url Optional. Pass True if you don't want the URL to be shown in the message
@@ -1760,7 +1746,7 @@ class Api
 
      * @return Bot
      */
-    public function InlineQueryResult(string $type, string $id, string $title, array|string $input_message_content, array|string|null $reply_markup, string|null $url = '', bool|null $hide_url = false, string|null $description = '', string|null $thumbnail_url = '', int|null $thumbnail_width = 0, int|null $thumbnail_height = 0): Bot
+    public function InlineQueryResult(string $type, string $id, string $title, string|array $input_message_content, array|string|null $reply_markup, string|null $url = '', bool|null $hide_url = false, string|null $description = '', string|null $thumbnail_url = '', int|null $thumbnail_width = 0, int|null $thumbnail_height = 0): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'title' => $title, 'input_message_content' => $input_message_content, 'reply_markup' => $reply_markup, 'url' => $url, 'hide_url' => $hide_url, 'description' => $description, 'thumbnail_url' => $thumbnail_url, 'thumbnail_width' => $thumbnail_width, 'thumbnail_height' => $thumbnail_height,], __FUNCTION__);
     }
@@ -1776,13 +1762,13 @@ class Api
      * @param string|null $description Optional. Short description of the result
      * @param string|null $caption Optional. Caption of the photo to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the photo caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the photo
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the photo
 
      * @return Bot
      */
-    public function InlineQueryResultPhoto(string $type, string $id, string $photo_url, string $thumbnail_url, int|null $photo_width = 0, int|null $photo_height = 0, string|null $title = '', string|null $description = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultPhoto(string $type, string $id, string $photo_url, string $thumbnail_url, int|null $photo_width = 0, int|null $photo_height = 0, string|null $title = '', string|null $description = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'photo_url' => $photo_url, 'thumbnail_url' => $thumbnail_url, 'photo_width' => $photo_width, 'photo_height' => $photo_height, 'title' => $title, 'description' => $description, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -1799,13 +1785,13 @@ class Api
      * @param string|null $title Optional. Title for the result
      * @param string|null $caption Optional. Caption of the GIF file to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the GIF animation
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the GIF animation
 
      * @return Bot
      */
-    public function InlineQueryResultGif(string $type, string $id, string $gif_url, int|null $gif_width = 0, int|null $gif_height = 0, int|null $gif_duration = 0, string $thumbnail_url, string|null $thumbnail_mime_type = '', string|null $title = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultGif(string $type, string $id, string $gif_url, int|null $gif_width = 0, int|null $gif_height = 0, int|null $gif_duration = 0, string $thumbnail_url, string|null $thumbnail_mime_type = '', string|null $title = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'gif_url' => $gif_url, 'gif_width' => $gif_width, 'gif_height' => $gif_height, 'gif_duration' => $gif_duration, 'thumbnail_url' => $thumbnail_url, 'thumbnail_mime_type' => $thumbnail_mime_type, 'title' => $title, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -1822,13 +1808,13 @@ class Api
      * @param string|null $title Optional. Title for the result
      * @param string|null $caption Optional. Caption of the MPEG-4 file to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the video animation
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the video animation
 
      * @return Bot
      */
-    public function InlineQueryResultMpeg4Gif(string $type, string $id, string $mpeg4_url, int|null $mpeg4_width = 0, int|null $mpeg4_height = 0, int|null $mpeg4_duration = 0, string $thumbnail_url, string|null $thumbnail_mime_type = '', string|null $title = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultMpeg4Gif(string $type, string $id, string $mpeg4_url, int|null $mpeg4_width = 0, int|null $mpeg4_height = 0, int|null $mpeg4_duration = 0, string $thumbnail_url, string|null $thumbnail_mime_type = '', string|null $title = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'mpeg4_url' => $mpeg4_url, 'mpeg4_width' => $mpeg4_width, 'mpeg4_height' => $mpeg4_height, 'mpeg4_duration' => $mpeg4_duration, 'thumbnail_url' => $thumbnail_url, 'thumbnail_mime_type' => $thumbnail_mime_type, 'title' => $title, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -1840,15 +1826,15 @@ class Api
      * @param string $title Title
      * @param string|null $caption Optional. Caption, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the audio caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param string|null $performer Optional. Performer
      * @param int|null $audio_duration Optional. Audio duration in seconds
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the audio
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the audio
 
      * @return Bot
      */
-    public function InlineQueryResultVideo(string $type, string $id, string $audio_url, string $title, string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], string|null $performer = '', int|null $audio_duration = 0, array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultVideo(string $type, string $id, string $audio_url, string $title, string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], string|null $performer = '', int|null $audio_duration = 0, array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'audio_url' => $audio_url, 'title' => $title, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'performer' => $performer, 'audio_duration' => $audio_duration, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -1860,14 +1846,14 @@ class Api
      * @param string $title Recording title
      * @param string|null $caption Optional. Caption, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the voice message caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param int|null $voice_duration Optional. Recording duration in seconds
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the voice recording
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the voice recording
 
      * @return Bot
      */
-    public function InlineQueryResultVoice(string $type, string $id, string $voice_url, string $title, string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], int|null $voice_duration = 0, array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultVoice(string $type, string $id, string $voice_url, string $title, string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], int|null $voice_duration = 0, array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'voice_url' => $voice_url, 'title' => $title, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'voice_duration' => $voice_duration, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -1878,19 +1864,19 @@ class Api
      * @param string $title Title for the result
      * @param string|null $caption Optional. Caption of the document to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the document caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param string $document_url A valid URL for the file
      * @param string $mime_type MIME type of the content of the file, either “application/pdf” or “application/zip”
      * @param string|null $description Optional. Short description of the result
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the file
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the file
      * @param string|null $thumbnail_url Optional. URL of the thumbnail (JPEG only) for the file
      * @param int|null $thumbnail_width Optional. Thumbnail width
      * @param int|null $thumbnail_height Optional. Thumbnail height
 
      * @return Bot
      */
-    public function InlineQueryResultDocument(string $type, string $id, string $title, string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], string $document_url, string $mime_type, string|null $description = '', array|string|null $reply_markup, array|string|null $input_message_content, string|null $thumbnail_url = '', int|null $thumbnail_width = 0, int|null $thumbnail_height = 0): Bot
+    public function InlineQueryResultDocument(string $type, string $id, string $title, string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], string $document_url, string $mime_type, string|null $description = '', array|string|null $reply_markup, string|array|null $input_message_content, string|null $thumbnail_url = '', int|null $thumbnail_width = 0, int|null $thumbnail_height = 0): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'title' => $title, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'document_url' => $document_url, 'mime_type' => $mime_type, 'description' => $description, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content, 'thumbnail_url' => $thumbnail_url, 'thumbnail_width' => $thumbnail_width, 'thumbnail_height' => $thumbnail_height,], __FUNCTION__);
     }
@@ -1906,14 +1892,14 @@ class Api
      * @param int|null $heading Optional. For live locations, a direction in which the user is moving, in degrees. Must be between 1 and 360 if specified.
      * @param int|null $proximity_alert_radius Optional. For live locations, a maximum distance for proximity alerts about approaching another chat member, in meters. Must be between 1 and 100000 if specified.
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the location
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the location
      * @param string|null $thumbnail_url Optional. Url of the thumbnail for the result
      * @param int|null $thumbnail_width Optional. Thumbnail width
      * @param int|null $thumbnail_height Optional. Thumbnail height
 
      * @return Bot
      */
-    public function InlineQueryResultLocation(string $type, string $id, float $latitude, float $longitude, string $title, float|null $horizontal_accuracy, int|null $live_period = 0, int|null $heading = 0, int|null $proximity_alert_radius = 0, array|string|null $reply_markup, array|string|null $input_message_content, string|null $thumbnail_url = '', int|null $thumbnail_width = 0, int|null $thumbnail_height = 0): Bot
+    public function InlineQueryResultLocation(string $type, string $id, float $latitude, float $longitude, string $title, float|null $horizontal_accuracy, int|null $live_period = 0, int|null $heading = 0, int|null $proximity_alert_radius = 0, array|string|null $reply_markup, string|array|null $input_message_content, string|null $thumbnail_url = '', int|null $thumbnail_width = 0, int|null $thumbnail_height = 0): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'latitude' => $latitude, 'longitude' => $longitude, 'title' => $title, 'horizontal_accuracy' => $horizontal_accuracy, 'live_period' => $live_period, 'heading' => $heading, 'proximity_alert_radius' => $proximity_alert_radius, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content, 'thumbnail_url' => $thumbnail_url, 'thumbnail_width' => $thumbnail_width, 'thumbnail_height' => $thumbnail_height,], __FUNCTION__);
     }
@@ -1930,14 +1916,14 @@ class Api
      * @param string|null $google_place_id Optional. Google Places identifier of the venue
      * @param string|null $google_place_type Optional. Google Places type of the venue. (See supported types.)
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the venue
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the venue
      * @param string|null $thumbnail_url Optional. Url of the thumbnail for the result
      * @param int|null $thumbnail_width Optional. Thumbnail width
      * @param int|null $thumbnail_height Optional. Thumbnail height
 
      * @return Bot
      */
-    public function InlineQueryResultVenue(string $type, string $id, Float $latitude, Float $longitude, string $title, string $address, string|null $foursquare_id = '', string|null $foursquare_type = '', string|null $google_place_id = '', string|null $google_place_type = '', array|string|null $reply_markup, array|string|null $input_message_content, string|null $thumbnail_url = '', int|null $thumbnail_width = 0, int|null $thumbnail_height = 0): Bot
+    public function InlineQueryResultVenue(string $type, string $id, Float $latitude, Float $longitude, string $title, string $address, string|null $foursquare_id = '', string|null $foursquare_type = '', string|null $google_place_id = '', string|null $google_place_type = '', array|string|null $reply_markup, string|array|null $input_message_content, string|null $thumbnail_url = '', int|null $thumbnail_width = 0, int|null $thumbnail_height = 0): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'latitude' => $latitude, 'longitude' => $longitude, 'title' => $title, 'address' => $address, 'foursquare_id' => $foursquare_id, 'foursquare_type' => $foursquare_type, 'google_place_id' => $google_place_id, 'google_place_type' => $google_place_type, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content, 'thumbnail_url' => $thumbnail_url, 'thumbnail_width' => $thumbnail_width, 'thumbnail_height' => $thumbnail_height,], __FUNCTION__);
     }
@@ -1950,14 +1936,14 @@ class Api
      * @param string|null $last_name Optional. Contact's last name
      * @param string|null $vcard Optional. Additional data about the contact in the form of a vCard, 0-2048 bytes
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the contact
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the contact
      * @param string|null $thumbnail_url Optional. Url of the thumbnail for the result
      * @param int|null $thumbnail_width Optional. Thumbnail width
      * @param int|null $thumbnail_height Optional. Thumbnail height
 
      * @return Bot
      */
-    public function InlineQueryResultContact(string $type, string $id, string $phone_number, string $first_name, string|null $last_name = '', string|null $vcard = '', array|string|null $reply_markup, array|string|null $input_message_content, string|null $thumbnail_url = '', int|null $thumbnail_width = 0, int|null $thumbnail_height = 0): Bot
+    public function InlineQueryResultContact(string $type, string $id, string $phone_number, string $first_name, string|null $last_name = '', string|null $vcard = '', array|string|null $reply_markup, string|array|null $input_message_content, string|null $thumbnail_url = '', int|null $thumbnail_width = 0, int|null $thumbnail_height = 0): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'phone_number' => $phone_number, 'first_name' => $first_name, 'last_name' => $last_name, 'vcard' => $vcard, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content, 'thumbnail_url' => $thumbnail_url, 'thumbnail_width' => $thumbnail_width, 'thumbnail_height' => $thumbnail_height,], __FUNCTION__);
     }
@@ -1983,13 +1969,13 @@ class Api
      * @param string|null $description Optional. Short description of the result
      * @param string|null $caption Optional. Caption of the photo to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the photo caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the photo
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the photo
 
      * @return Bot
      */
-    public function InlineQueryResultCachedPhoto(string $type, string $id, string $photo_file_id, string|null $title = '', string|null $description = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultCachedPhoto(string $type, string $id, string $photo_file_id, string|null $title = '', string|null $description = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'photo_file_id' => $photo_file_id, 'title' => $title, 'description' => $description, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -2001,13 +1987,13 @@ class Api
      * @param string|null $title Optional. Title for the result
      * @param string|null $caption Optional. Caption of the GIF file to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the GIF animation
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the GIF animation
 
      * @return Bot
      */
-    public function InlineQueryResultCachedGif(string $type, string $id, string $gif_file_id, string|null $title = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultCachedGif(string $type, string $id, string $gif_file_id, string|null $title = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'gif_file_id' => $gif_file_id, 'title' => $title, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -2019,13 +2005,13 @@ class Api
      * @param string|null $title Optional. Title for the result
      * @param string|null $caption Optional. Caption of the MPEG-4 file to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the video animation
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the video animation
 
      * @return Bot
      */
-    public function InlineQueryResultCachedMpeg4Gif(string $type, string $id, string $mpeg4_file_id, string|null $title = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultCachedMpeg4Gif(string $type, string $id, string $mpeg4_file_id, string|null $title = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'mpeg4_file_id' => $mpeg4_file_id, 'title' => $title, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -2035,11 +2021,11 @@ class Api
      * @param string $id Unique identifier for this result, 1-64 bytes
      * @param string $sticker_file_id A valid file identifier of the sticker
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the sticker
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the sticker
 
      * @return Bot
      */
-    public function InlineQueryResultCachedSticker(string $type, string $id, string $sticker_file_id, array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultCachedSticker(string $type, string $id, string $sticker_file_id, array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'sticker_file_id' => $sticker_file_id, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -2052,13 +2038,13 @@ class Api
      * @param string|null $description Optional. Short description of the result
      * @param string|null $caption Optional. Caption of the document to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the document caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the file
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the file
 
      * @return Bot
      */
-    public function InlineQueryResultCachedDocument(string $type, string $id, string $title, string $document_file_id, string|null $description = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultCachedDocument(string $type, string $id, string $title, string $document_file_id, string|null $description = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'title' => $title, 'document_file_id' => $document_file_id, 'description' => $description, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -2071,13 +2057,13 @@ class Api
      * @param string|null $description Optional. Short description of the result
      * @param string|null $caption Optional. Caption of the video to be sent, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the video caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the video
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the video
 
      * @return Bot
      */
-    public function InlineQueryResultCachedVideo(string $type, string $id, string $video_file_id, string $title, string|null $description = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultCachedVideo(string $type, string $id, string $video_file_id, string $title, string|null $description = '', string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'video_file_id' => $video_file_id, 'title' => $title, 'description' => $description, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -2089,13 +2075,13 @@ class Api
      * @param string $title Voice message title
      * @param string|null $caption Optional. Caption, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the voice message caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the voice message
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the voice message
 
      * @return Bot
      */
-    public function InlineQueryResultCachedVoice(string $type, string $id, string $voice_file_id, string $title, string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultCachedVoice(string $type, string $id, string $voice_file_id, string $title, string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'voice_file_id' => $voice_file_id, 'title' => $title, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -2106,13 +2092,13 @@ class Api
      * @param string $audio_file_id A valid file identifier for the audio file
      * @param string|null $caption Optional. Caption, 0-1024 characters after entities parsing
      * @param string|null $parse_mode Optional. Mode for parsing entities in the audio caption. See formatting options for more details.
-     * @param array<MessageEntity>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
      * @param array|string|null $reply_markup Optional. Inline keyboard attached to the message
-     * @param array|string|null $input_message_content Optional. Content of the message to be sent instead of the audio
+     * @param string|array|null $input_message_content Optional. Content of the message to be sent instead of the audio
 
      * @return Bot
      */
-    public function InlineQueryResultCachedAudio(string $type, string $id, string $audio_file_id, string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, array|string|null $input_message_content): Bot
+    public function InlineQueryResultCachedAudio(string $type, string $id, string $audio_file_id, string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], array|string|null $reply_markup, string|array|null $input_message_content): Bot
     {
         return $this->call(['type' => $type, 'id' => $id, 'audio_file_id' => $audio_file_id, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'reply_markup' => $reply_markup, 'input_message_content' => $input_message_content,], __FUNCTION__);
     }
@@ -2120,7 +2106,7 @@ class Api
      * This object represents the content of a message to be sent as a result of an inline query. Telegram clients currently support the following 5 types:</p><ul><li><a href="#inputtextmessagecontent">InputTextMessageContent</a></li><li><a href="#inputlocationmessagecontent">InputLocationMessageContent</a></li><li><a href="#inputvenuemessagecontent">InputVenueMessageContent</a></li><li><a href="#inputcontactmessagecontent">InputContactMessageContent</a></li><li><a href="#inputinvoicemessagecontent">InputInvoiceMessageContent</a></li></ul><h4><a class="anchor" name="inputtextmessagecontent" href="#inputtextmessagecontent"><i class="anchor-icon"></i></a>InputTextMessageContent</h4><p>Represents the <a href="#inputmessagecontent">content</a> of a text message to be sent as the result of an inline query.
      * @param string $message_text Text of the message to be sent, 1-4096 characters
      * @param string|null $parse_mode Optional. Mode for parsing entities in the message text. See formatting options for more details.
-     * @param array<MessageEntity>|null $entities Optional. List of special entities that appear in message text, which can be specified instead of parse_mode
+     * @param array<string|array>|null $entities Optional. List of special entities that appear in message text, which can be specified instead of parse_mode
      * @param bool|null $disable_web_page_preview Optional. Disables link previews for links in the sent message
 
      * @return Bot
@@ -2181,9 +2167,9 @@ class Api
      * @param string $payload Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
      * @param string $provider_token Payment provider token, obtained via @BotFather
      * @param string $currency Three-letter ISO 4217 currency code, see more on currencies
-     * @param array<LabeledPrice> $prices Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+     * @param array<string|array> $prices Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
      * @param int|null $max_tip_amount Optional. The maximum accepted amount for tips in the smallest units of the currency (integer, not float/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0
-     * @param array<Integer>|null $suggested_tip_amounts Optional. A JSON-serialized array of suggested amounts of tip in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+     * @param array<int>|null $suggested_tip_amounts Optional. A JSON-serialized array of suggested amounts of tip in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
      * @param string|null $provider_data Optional. A JSON-serialized object for data about the invoice, which will be shared with the payment provider. A detailed description of the required fields should be provided by the payment provider.
      * @param string|null $photo_url Optional. URL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service.
      * @param int|null $photo_size Optional. Photo size in bytes
@@ -2206,11 +2192,11 @@ class Api
     /**
      * Use this method to set the result of an interaction with a <a href="/bots/webapps">Web App</a> and send a corresponding message on behalf of the user to the chat from which the query originated. On success, a <a href="#sentwebappmessage">SentWebAppMessage</a> object is returned.
      * @param string $web_app_query_id YesUnique identifier for the query to be answered
-     * @param array|string $result YesA JSON-serialized object describing the message to be sent
+     * @param string|array $result YesA JSON-serialized object describing the message to be sent
 
      * @return Bot
      */
-    public function answerWebAppQuery(string $web_app_query_id, array|string $result): Bot
+    public function answerWebAppQuery(string $web_app_query_id, string|array $result): Bot
     {
         return $this->call(['web_app_query_id' => $web_app_query_id, 'result' => $result,], __FUNCTION__);
     }
@@ -2233,9 +2219,9 @@ class Api
      * @param string $payload YesBot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
      * @param string $provider_token YesPayment provider token, obtained via @BotFather
      * @param string $currency YesThree-letter ISO 4217 currency code, see more on currencies
-     * @param array<LabeledPrice> $prices YesPrice breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+     * @param array<string|array> $prices YesPrice breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
      * @param int|null $max_tip_amount OptionalThe maximum accepted amount for tips in the smallest units of the currency (integer, not float/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0
-     * @param array<Integer>|null $suggested_tip_amounts OptionalA JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+     * @param array<int>|null $suggested_tip_amounts OptionalA JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
      * @param string|null $start_parameter OptionalUnique deep-linking parameter. If left empty, forwarded copies of the sent message will have a Pay button, allowing multiple users to pay directly from the forwarded message, using the same invoice. If non-empty, forwarded copies of the sent message will have a URL button with a deep link to the bot (instead of a Pay button), with the value used as the start parameter
      * @param string|null $provider_data OptionalJSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
      * @param string|null $photo_url OptionalURL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service. People like it better when they see what they are paying for.
@@ -2268,9 +2254,9 @@ class Api
      * @param string $payload YesBot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
      * @param string $provider_token YesPayment provider token, obtained via BotFather
      * @param string $currency YesThree-letter ISO 4217 currency code, see more on currencies
-     * @param array<LabeledPrice> $prices YesPrice breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+     * @param array<string|array> $prices YesPrice breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
      * @param int|null $max_tip_amount OptionalThe maximum accepted amount for tips in the smallest units of the currency (integer, not float/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0
-     * @param array<Integer>|null $suggested_tip_amounts OptionalA JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
+     * @param array<int>|null $suggested_tip_amounts OptionalA JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
      * @param string|null $provider_data OptionalJSON-serialized data about the invoice, which will be shared with the payment provider. A detailed description of required fields should be provided by the payment provider.
      * @param string|null $photo_url OptionalURL of the product photo for the invoice. Can be a photo of the goods or a marketing image for a service.
      * @param int|null $photo_size OptionalPhoto size in bytes
@@ -2294,7 +2280,7 @@ class Api
      * If you sent an invoice requesting a shipping address and the parameter <em>is_flexible</em> was specified, the Bot API will send an <a href="#update">Update</a> with a <em>shipping_query</em> field to the bot. Use this method to reply to shipping queries. On success, <em>True</em> is returned.
      * @param string $shipping_query_id YesUnique identifier for the query to be answered
      * @param bool $ok YesPass True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible)
-     * @param array<ShippingOption>|null $shipping_options OptionalRequired if ok is True. A JSON-serialized array of available shipping options.
+     * @param array<string|array>|null $shipping_options OptionalRequired if ok is True. A JSON-serialized array of available shipping options.
      * @param string|null $error_message OptionalRequired if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user.
 
      * @return Bot
@@ -2330,7 +2316,7 @@ class Api
      * This object represents one shipping option.
      * @param string $id Shipping option identifier
      * @param string $title Option title
-     * @param array<LabeledPrice> $prices List of price portions
+     * @param array<string|array> $prices List of price portions
 
      * @return Bot
      */
@@ -2341,7 +2327,7 @@ class Api
     /**
      * Informs a user that some of the Telegram Passport elements they provided contains errors. The user will not be able to re-submit their Passport to you until the errors are fixed (the contents of the field for which you returned the error must change). Returns <em>True</em> on success.</p><p>Use this if the data submitted by the user doesn&#39;t satisfy the standards your service requires for any reason. For example, if a birthday date seems invalid, a submitted document is blurry, a scan shows evidence of tampering, etc. Supply some details in the error message to make sure the user knows how to correct the issues.
      * @param int $user_id YesUser identifier
-     * @param array<PassportElementError> $errors YesA JSON-serialized array describing the errors
+     * @param array<string|array> $errors YesA JSON-serialized array describing the errors
 
      * @return Bot
      */
@@ -2487,12 +2473,12 @@ class Api
     /**
      * Use this method to get data for high score tables. Will return the score of the specified user and several of their neighbors in a game. Returns an Array of <a href="#gamehighscore">GameHighScore</a> objects.</p><blockquote><p>This method will currently return scores for the target user, plus two of their closest neighbors on each side. Will also return the top three users if the user and their neighbors are not among them. Please note that this behavior is subject to change.</p></blockquote><table class="table"><thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody><tr><td>user_id</td><td>Integer</td><td>Yes</td><td>Target user id</td></tr><tr><td>chat_id</td><td>Integer</td><td>Optional</td><td>Required if <em>inline_message_id</em> is not specified. Unique identifier for the target chat</td></tr><tr><td>message_id</td><td>Integer</td><td>Optional</td><td>Required if <em>inline_message_id</em> is not specified. Identifier of the sent message</td></tr><tr><td>inline_message_id</td><td>String</td><td>Optional</td><td>Required if <em>chat_id</em> and <em>message_id</em> are not specified. Identifier of the inline message</td></tr></tbody></table><h4><a class="anchor" name="gamehighscore" href="#gamehighscore"><i class="anchor-icon"></i></a>GameHighScore</h4><p>This object represents one row of the high scores table for a game.
      * @param int $position Position in high score table for the game
-     * @param User $user User
+     * @param string|array $user User
      * @param int $score Score
 
      * @return Bot
      */
-    public function getGameHighScores(int $position, array|string $user, int $score): Bot
+    public function getGameHighScores(int $position, string|array $user, int $score): Bot
     {
         return $this->call(['position' => $position, 'user' => $user, 'score' => $score,], __FUNCTION__);
     }
