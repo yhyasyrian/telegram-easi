@@ -18,9 +18,9 @@ class Bot {
     /**
      * Description from API
      * 
-     * @var string
+     * @var string|null
      */
-    public string $description;
+    public ?string $description;
     /**
      * Config Class
      * 
@@ -29,6 +29,6 @@ class Bot {
     public function __construct(\stdClass $ApiResult) {
         $this->result = $ApiResult->result;
         $this->ok = $ApiResult->ok;
-        $this->description = $ApiResult->description;
+        $this->description = $ApiResult->description ?? '';
     }
 }
