@@ -22,7 +22,7 @@ class Api
      * @param callable|string $request Function send request to API Telegram
      * @param string $token Set Token Bot
      */
-    public function __construct(callable|string $request = file_get_contents::class,string $token)
+    public function __construct(callable|string $request = file_get_contents::class, string $token)
     {
         $this->request = $request;
         $this->token = $token;
@@ -34,9 +34,10 @@ class Api
      * @param string $metohd name method
      * @return Bot
      */
-    public function call(array $data = [],string $metohd) :Bot {
+    public function call(array $data = [], string $metohd): Bot
+    {
         $call = $this->request;
-        $return = $call('https://api.telegram.org/bot'.$this->token.'/'.$metohd.'?'.http_build_query($data));
+        $return = $call('https://api.telegram.org/bot' . $this->token . '/' . $metohd . '?' . http_build_query($data));
         if (is_string($return)) {
             $return = json_decode($return);
         }
@@ -56,9 +57,27 @@ class Api
      * 
      * @return Bot
      */
-    public function setWebhook(string $url, string|null $certificate = '', string|null $ip_address = '', int|null $max_connections = 0, ?array $allowed_updates = [], bool|null $drop_pending_updates = false, string|null $secret_token = '') :Bot {
+    public function setWebhook(string $url, string|null $certificate = '', string|null $ip_address = '', int|null $max_connections = 0, ?array $allowed_updates = [], bool|null $drop_pending_updates = false, string|null $secret_token = ''): Bot
+    {
         return $this->call([
-            'url' => $url,'certificate' => $certificate,'ip_address' => $ip_address,'max_connections' => $max_connections,'allowed_updates' => $allowed_updates,'drop_pending_updates' => $drop_pending_updates,'secret_token' => $secret_token,
-        ],'setWebhook');
+            'url' => $url, 'certificate' => $certificate, 'ip_address' => $ip_address, 'max_connections' => $max_connections, 'allowed_updates' => $allowed_updates, 'drop_pending_updates' => $drop_pending_updates, 'secret_token' => $secret_token,
+        ], __FUNCTION__);
     }
+    /**
+     * Use this method to receive incoming updates using long polling ([wiki](https://en.wikipedia.org/wiki/Push_technology#Long_polling)). Returns an Array of Update objects.
+     * 
+     * @param int|null $offset OptionalIdentifier of the first update to be returned. Must be greater by one than the highest among the identifiers of previously received updates. By default, updates starting with the earliest unconfirmed update are returned. An update is considered confirmed as soon as getUpdates is called with an offset higher than its update_id. The negative offset can be specified to retrieve updates starting from -offset update from the end of the updates queue. All previous updates will be forgotten.
+     * @param int|null $limit OptionalLimits the number of updates to be retrieved. Values between 1-100 are accepted. Defaults to 100.
+     * @param int|null $timeout OptionalTimeout in seconds for long polling. Defaults to 0, i.e. usual short polling. Should be positive, short polling should be used for testing purposes only.
+     * @param array<string>|null $allowed_updates OptionalA JSON-serialized list of the update types you want your bot to receive. For example, specify [“message”, “edited_channel_post”, “callback_query”] to only receive updates of these types. See Update for a complete list of available update types. Specify an empty list to receive all update types except chat_member (default). If not specified, the previous setting will be used.Please note that this parameter doesn't affect updates created before the call to the getUpdates, so unwanted updates may be received for a short period of time.
+     * 
+     * @return getUpdates
+     */
+    public function getUpdates(int|null $offset = 0, int|null $limit = 0, int|null $timeout = 0, ?array $allowed_updates = []): getUpdates
+    {
+        return $this->call([
+            'offset' => $offset,'limit' => $limit,'timeout' => $timeout,'allowed_updates' => $allowed_updates,
+        ], __FUNCTION__);
+    }
+    
 }

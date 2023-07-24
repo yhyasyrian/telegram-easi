@@ -185,7 +185,6 @@ class ConfigObject
                     $class = $key;
                 }
                 $name = '\\Yhyasyrian\\TelegramEasi\\Updates\\' . $class;
-                new \Yhyasyrian\TelegramEasi\Helpers\RequireFiles(filename: $class, isUpdate: true);
                 $object->{$key} = $this->configData($value, new $name());
             } else {
                 $object->{$key} = $value;
