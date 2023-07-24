@@ -322,16 +322,6 @@ class Api
         return $this->call(['short_description' => $short_description,], __FUNCTION__);
     }
     /**
-     * This object describes the bot&#39;s menu button in a private chat. It should be one of</p><ul><li><a href="#menubuttoncommands">MenuButtonCommands</a></li><li><a href="#menubuttonwebapp">MenuButtonWebApp</a></li><li><a href="#menubuttondefault">MenuButtonDefault</a></li></ul><p>If a menu button other than <a href="#menubuttondefault">MenuButtonDefault</a> is set for a private chat, then it is applied in the chat. Otherwise the default menu button is applied. By default, the menu button opens the list of bot commands.</p><h4><a class="anchor" name="menubuttoncommands" href="#menubuttoncommands"><i class="anchor-icon"></i></a>MenuButtonCommands</h4><p>Represents a menu button, which opens the bot&#39;s list of commands.
-     * @param string $type Type of the button, must be commands
-
-     * @return Bot
-     */
-    public function MenuButton(string $type): Bot
-    {
-        return $this->call(['type' => $type,], __FUNCTION__);
-    }
-    /**
      * Represents a menu button, which launches a <a href="/bots/webapps">Web App</a>.
      * @param string $type Type of the button, must be web_app
      * @param string $text Text on the button
@@ -363,21 +353,6 @@ class Api
     public function ResponseParameters(int|null $migrate_to_chat_id = 0, int|null $retry_after = 0): Bot
     {
         return $this->call(['migrate_to_chat_id' => $migrate_to_chat_id, 'retry_after' => $retry_after,], __FUNCTION__);
-    }
-    /**
-     * This object represents the content of a media message to be sent. It should be one of</p><ul><li><a href="#inputmediaanimation">InputMediaAnimation</a></li><li><a href="#inputmediadocument">InputMediaDocument</a></li><li><a href="#inputmediaaudio">InputMediaAudio</a></li><li><a href="#inputmediaphoto">InputMediaPhoto</a></li><li><a href="#inputmediavideo">InputMediaVideo</a></li></ul><h4><a class="anchor" name="inputmediaphoto" href="#inputmediaphoto"><i class="anchor-icon"></i></a>InputMediaPhoto</h4><p>Represents a photo to be sent.
-     * @param string $type Type of the result, must be photo
-     * @param string $media File to send. Pass a file_id to send a file that exists on the Telegram servers (recommended), pass an HTTP URL for Telegram to get a file from the Internet, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. More information on Sending Files 
-     * @param string|null $caption Optional. Caption of the photo to be sent, 0-1024 characters after entities parsing
-     * @param string|null $parse_mode Optional. Mode for parsing entities in the photo caption. See formatting options for more details.
-     * @param array<string|array>|null $caption_entities Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
-     * @param bool|null $has_spoiler Optional. Pass True if the photo needs to be covered with a spoiler animation
-
-     * @return Bot
-     */
-    public function InputMedia(string $type, string $media, string|null $caption = '', string|null $parse_mode = '', ?array $caption_entities = [], bool|null $has_spoiler = false): Bot
-    {
-        return $this->call(['type' => $type, 'media' => $media, 'caption' => $caption, 'parse_mode' => $parse_mode, 'caption_entities' => $caption_entities, 'has_spoiler' => $has_spoiler,], __FUNCTION__);
     }
     /**
      * Represents a video to be sent.
@@ -468,7 +443,7 @@ class Api
 
      * @return Bot
      */
-    public function sendmessage(int|string $chat_id, int|null $message_thread_id = 0, string $text, string|null $parse_mode = '', ?array $entities = [], bool|null $disable_web_page_preview = false, bool|null $disable_notification = false, bool|null $protect_content = false, int|null $reply_to_message_id = 0, bool|null $allow_sending_without_reply = false, array|string|null $reply_markup): Bot
+    public function sendMessage(int|string $chat_id, string $text, int|null $message_thread_id = 0, string|null $parse_mode = '', ?array $entities = [], bool|null $disable_web_page_preview = false, bool|null $disable_notification = false, bool|null $protect_content = false, int|null $reply_to_message_id = 0, bool|null $allow_sending_without_reply = false, array|string|null $reply_markup): Bot
     {
         return $this->call(['chat_id' => $chat_id, 'message_thread_id' => $message_thread_id, 'text' => $text, 'parse_mode' => $parse_mode, 'entities' => $entities, 'disable_web_page_preview' => $disable_web_page_preview, 'disable_notification' => $disable_notification, 'protect_content' => $protect_content, 'reply_to_message_id' => $reply_to_message_id, 'allow_sending_without_reply' => $allow_sending_without_reply, 'reply_markup' => $reply_markup,], __FUNCTION__);
     }
@@ -1513,19 +1488,6 @@ class Api
     public function StickerSet(string $name, string $title, string $sticker_type, bool $is_animated, bool $is_video, ?array $stickers = [], string|array|null $thumbnail): Bot
     {
         return $this->call(['name' => $name, 'title' => $title, 'sticker_type' => $sticker_type, 'is_animated' => $is_animated, 'is_video' => $is_video, 'stickers' => $stickers, 'thumbnail' => $thumbnail,], __FUNCTION__);
-    }
-    /**
-     * This object describes a sticker to be added to a sticker set.
-     * @param string $sticker The added sticker. Pass a file_id as a String to send a file that already exists on the Telegram servers, pass an HTTP URL as a String for Telegram to get a file from the Internet, upload a new one using multipart/form-data, or pass “attach://<file_attach_name>” to upload a new one using multipart/form-data under <file_attach_name> name. Animated and video stickers can't be uploaded via HTTP URL. More information on Sending Files 
-     * @param array<string> $emoji_list List of 1-20 emoji associated with the sticker
-     * @param string|array|null $mask_position Optional. Position where the mask should be placed on faces. For “mask” stickers only.
-     * @param array<string>|null $keywords Optional. List of 0-20 search keywords for the sticker with total length of up to 64 characters. For “regular” and “custom_emoji” stickers only.
-
-     * @return Bot
-     */
-    public function InputSticker(string $sticker, ?array $emoji_list = [], string|array|null $mask_position, ?array $keywords = []): Bot
-    {
-        return $this->call(['sticker' => $sticker, 'emoji_list' => $emoji_list, 'mask_position' => $mask_position, 'keywords' => $keywords,], __FUNCTION__);
     }
     /**
      * Use this method to send static .WEBP, <a href="https://telegram.org/blog/animated-stickers">animated</a> .TGS, or <a href="https://telegram.org/blog/video-stickers-better-reactions">video</a> .WEBM stickers. On success, the sent <a href="#message">Message</a> is returned.
