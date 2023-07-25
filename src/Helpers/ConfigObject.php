@@ -171,10 +171,13 @@ class ConfigObject
     /**
      * Config data with this function
      * 
-     * @return mixed
+     * @return \Yhyasyrian\TelegramEasi\Updates\Update
      */
-    private function configData(array|\stdClass $array, object $object): mixed
+    private function configData(array|\stdClass $array, object $object): \Yhyasyrian\TelegramEasi\Updates\Update
     {
+        if (is_a($array,\stdClass::class)) {
+            $array = json_decode(json_encode($array),true);
+        }
         $this->nameClass = $this->getNameClass($object::class);
         foreach ($array as $key => $value) {
             if (is_array($value)) {
@@ -198,9 +201,9 @@ class ConfigObject
     /**
      * Return update
      * 
-     * @return mixed
+     * @return \Yhyasyrian\TelegramEasi\Updates\Update
      */
-    public function getResult(): mixed
+    public function getResult(): \Yhyasyrian\TelegramEasi\Updates\Update
     {
         return $this->result;
     }
