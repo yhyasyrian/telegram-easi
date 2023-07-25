@@ -2,7 +2,6 @@
 
 namespace Yhyasyrian\TelegramEasi\Helpers;
 
-require_once __DIR__ . '/RequireFiles.php';
 class ConfigObject
 {
     /**
@@ -174,7 +173,7 @@ class ConfigObject
      * 
      * @return mixed
      */
-    private function configData(array $array, object $object): mixed
+    private function configData(array|\stdClass $array, object $object): mixed
     {
         $this->nameClass = $this->getNameClass($object::class);
         foreach ($array as $key => $value) {
