@@ -155,7 +155,7 @@ class ConfigObject
     /**
      * Start config object
      */
-    public function __construct(string $name, array $array)
+    public function __construct(string $name, array|\stdClass $array)
     {
         $this->result = $this->configData($array, new $name());
     }
@@ -181,7 +181,11 @@ class ConfigObject
                 if (isset($this->types[$this->nameClass][$key])) {
                     $class = $this->types[$this->nameClass][$key];
                 } else {
-                    $class = $key;
+                    if ($key == 'entities') {
+                        $class = 'MessageEntity';
+                    } else {
+                        $class = $key;
+                    }
                 }
                 $name = '\\Yhyasyrian\\TelegramEasi\\Updates\\' . $class;
                 $object->{$key} = $this->configData($value, new $name());
