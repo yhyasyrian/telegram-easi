@@ -23,7 +23,8 @@ class ConfigObject
             "thumbnail" => "PhotoSize"
         ],
         "CallbackQuery" => [
-            "message" => "Message"
+            "message" => "Message",
+            "from" => "User"
         ],
         "Chat" => [
             "photo" => "ChatPhoto",
@@ -31,14 +32,45 @@ class ConfigObject
             "permissions" => "ChatPermissions",
             "location" => "ChatLocation"
         ],
+        "ChatInviteLink" => [
+            "creator" => "User"
+        ],
         "ChatJoinRequest" => [
-            "invite_link" => "ChatInviteLink"
+            "invite_link" => "ChatInviteLink",
+            "chat" => "Chat",
+            "from" => "User"
+        ],
+        "ChatLocation" => [
+            "location" => "Location"
+        ],
+        "ChatMemberAdministrator" => [
+            "user" => "User"
+        ],
+        "ChatMemberBanned" => [
+            "user" => "User"
+        ],
+        "ChatMemberLeft" => [
+            "user" => "User"
+        ],
+        "ChatMemberMember" => [
+            "user" => "User"
+        ],
+        "ChatMemberOwner" => [
+            "user" => "User"
+        ],
+        "ChatMemberRestricted" => [
+            "user" => "User"
         ],
         "ChatMemberUpdated" => [
-            "invite_link" => "ChatInviteLink"
+            "invite_link" => "ChatInviteLink",
+            "chat" => "Chat",
+            "from" => "User",
+            "old_chat_member" => "ChatMember",
+            "new_chat_member" => "ChatMember"
         ],
         "ChosenInlineResult" => [
-            "location" => "Location"
+            "location" => "Location",
+            "from" => "User"
         ],
         "Document" => [
             "thumbnail" => "PhotoSize"
@@ -58,10 +90,18 @@ class ConfigObject
             "callback_game" => "CallbackGame"
         ],
         "InlineQuery" => [
-            "location" => "Location"
+            "location" => "Location",
+            "from" => "User"
         ],
         "Location" => [
-            "horizontal_accuracy" => "float"
+            "horizontal_accuracy" => "float",
+            "longitude" => "Float",
+            "latitude" => "Float"
+        ],
+        "MaskPosition" => [
+            "x_shift" => "float",
+            "y_shift" => "float",
+            "scale" => "float"
         ],
         "Message" => [
             "from" => "User",
@@ -104,7 +144,8 @@ class ConfigObject
             "video_chat_ended" => "VideoChatEnded",
             "video_chat_participants_invited" => "VideoChatParticipantsInvited",
             "web_app_data" => "WebAppData",
-            "reply_markup" => "InlineKeyboardMarkup"
+            "reply_markup" => "InlineKeyboardMarkup",
+            "chat" => "Chat"
         ],
         "MessageEntity" => [
             "user" => "User"
@@ -112,8 +153,23 @@ class ConfigObject
         "OrderInfo" => [
             "shipping_address" => "ShippingAddress"
         ],
+        "PassportData" => [
+            "credentials" => "EncryptedCredentials"
+        ],
+        "PollAnswer" => [
+            "user" => "User"
+        ],
         "PreCheckoutQuery" => [
-            "order_info" => "OrderInfo"
+            "order_info" => "OrderInfo",
+            "from" => "User"
+        ],
+        "ProximityAlertTriggered" => [
+            "traveler" => "User",
+            "watcher" => "User"
+        ],
+        "ShippingQuery" => [
+            "from" => "User",
+            "shipping_address" => "ShippingAddress"
         ],
         "Sticker" => [
             "thumbnail" => "PhotoSize",
@@ -138,6 +194,9 @@ class ConfigObject
             "my_chat_member" => "ChatMemberUpdated",
             "chat_member" => "ChatMemberUpdated",
             "chat_join_request" => "ChatJoinRequest"
+        ],
+        "Venue" => [
+            "location" => "Location"
         ],
         "Video" => [
             "thumbnail" => "PhotoSize"
@@ -171,12 +230,12 @@ class ConfigObject
     /**
      * Config data with this function
      * 
-     * @return \Yhyasyrian\TelegramEasi\Updates\Update
+     * @return mixed
      */
-    private function configData(array|\stdClass $array, object $object): \Yhyasyrian\TelegramEasi\Updates\Update
+    private function configData(array|\stdClass $array, object $object): mixed
     {
-        if (is_a($array,\stdClass::class)) {
-            $array = json_decode(json_encode($array),true);
+        if (is_a($array, \stdClass::class)) {
+            $array = json_decode(json_encode($array), true);
         }
         $this->nameClass = $this->getNameClass($object::class);
         foreach ($array as $key => $value) {
@@ -185,13 +244,23 @@ class ConfigObject
                     $class = $this->types[$this->nameClass][$key];
                 } else {
                     if ($key == 'entities') {
-                        $class = 'MessageEntity';
+                        $object->{$key} = $this->configEntities($value);
+                        continue;
+                    } else if (isset($value[0])) {
+                        exit(print_r($object::class));
+                        $object->{$key} = $this->configArray($value, $object::class);
+                        continue;
                     } else {
                         $class = $key;
                     }
                 }
                 $name = '\\Yhyasyrian\\TelegramEasi\\Updates\\' . $class;
-                $object->{$key} = $this->configData($value, new $name());
+                if (isset($value[0]) and is_array($value[0])) {
+                    $object->{$key} = $this->configArray($value, $name);
+                    // die(json_encode($value,128|256));
+                } else {
+                    $object->{$key} = $this->configData($value, new $name());
+                }
             } else {
                 $object->{$key} = $value;
             }
@@ -199,11 +268,47 @@ class ConfigObject
         return $object;
     }
     /**
+     * Config entities array
+     * 
+     * @return \YhyaSyrian\TelegramEasi\Updates\MessageEntity[]
+     */
+    private function configEntities(array $array): array
+    {
+        $MessageEntity = [];
+        require_once __DIR__ . '/../Updates/MessageEntity.php';
+        foreach ($array as $key => $value) {
+            $MessageEntity[] = $this->configData($value, (new \YhyaSyrian\TelegramEasi\Updates\MessageEntity));
+        }
+        return $MessageEntity;
+    }
+    /**
+     * Config array else
+     * 
+     * @return array<array>
+     */
+    private function configArray(array $array, string $name): array
+    {
+        $MessageEntity = [];
+        foreach ($array as $key => $value) {
+            $MessageEntity[] = $this->configData($value, (new $name()));
+        }
+        return $MessageEntity;
+    }
+    /**
+     * Return Result
+     * 
+     * @return mixed
+     */
+    public function getResult(): mixed
+    {
+        return $this->result;
+    }
+    /**
      * Return update
      * 
-     * @return \Yhyasyrian\TelegramEasi\Updates\Update
+     * @return \YhyaSyrian\TelegramEasi\Updates\Update
      */
-    public function getResult(): \Yhyasyrian\TelegramEasi\Updates\Update
+    public function getUpdate(): \YhyaSyrian\TelegramEasi\Updates\Update
     {
         return $this->result;
     }

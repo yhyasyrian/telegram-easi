@@ -18,7 +18,7 @@ class GetUpdate extends Api
         $update->update_id = 0;
         while (true) {
             $offset = $update->update_id ?? 0;
-            $update = $this->getUpdate(offset: $offset);
+            $update = $this->getUpdate(offset: ($offset + 1));
             if (empty($update)) {
                 continue;
             }
@@ -37,7 +37,7 @@ class GetUpdate extends Api
     {
         $update = $this->getUpdates(offset: $offset);
         if (isset($update->result[0])) {
-            return (new ConfigObject(\Yhyasyrian\TelegramEasi\Updates\Update::class, $update->result[0]))->getResult();
+            return (new ConfigObject(\Yhyasyrian\TelegramEasi\Updates\Update::class, $update->result[0]))->getUpdate();
         } else {
             return null;
         }
