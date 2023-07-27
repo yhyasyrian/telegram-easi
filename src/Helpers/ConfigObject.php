@@ -257,9 +257,12 @@ class ConfigObject
                 $name = '\\Yhyasyrian\\TelegramEasi\\Updates\\' . $class;
                 if (isset($value[0]) and is_array($value[0])) {
                     $object->{$key} = $this->configArray($value, $name);
-                    // die(json_encode($value,128|256));
                 } else {
-                    $object->{$key} = $this->configData($value, new $name());
+                    try {
+                        $object->{$key} = $this->configData($value, new $name());
+                    } catch (\Throwable $th) {
+                        $object->{$key} = $this->configData($value, new \stdClass());
+                    }
                 }
             } else {
                 $object->{$key} = $value;
