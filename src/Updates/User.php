@@ -15,7 +15,7 @@ class User
      *
      * @var bool
      */
-    public bool $is_bot;
+    public ?bool $is_bot;
     /**
      * User's or bot's first name
      *

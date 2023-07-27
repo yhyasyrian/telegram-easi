@@ -8,7 +8,7 @@ class Bot {
      *
      * @var bool
      */
-    public bool $ok;
+    public ?bool $ok;
     /**
      * Result from API
      * 

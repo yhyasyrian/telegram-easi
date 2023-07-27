@@ -23,6 +23,18 @@ class Message
      */
     public User|null $from;
     /**
+     * Optional. New Chat.
+     *
+     * @var User|null
+     */
+    public User|null $new_chat_participant;
+    /**
+     * Optional. New member in group.
+     *
+     * @var User|null
+     */
+    public User|null $new_chat_member;
+    /**
      * Optional. Sender of the message, sent on behalf of a chat. For example, the channel itself for channel posts, the supergroup itself for messages from anonymous group administrators, the linked channel for messages automatically forwarded to the discussion group. For backward compatibility, the field from contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
      *
      * @var Chat|null
@@ -427,7 +439,7 @@ class Message
     /**
      * Optional. Inline keyboard attached to the message. login_url buttons are represented as ordinary url buttons.
      *
-     * @var InlineKeyboardMarkup|null
+     * @var array<array<array<InlineKeyboardButton>>>|null
      */
-    public InlineKeyboardMarkup|null $reply_markup;
+    public array|null $reply_markup;
 }

@@ -21,7 +21,7 @@ class ChatMemberOwner
      *
      * @var bool
      */
-    public bool $is_anonymous;
+    public ?bool $is_anonymous;
     /**
      * Optional. Custom title for this user
      *

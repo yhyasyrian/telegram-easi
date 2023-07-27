@@ -33,13 +33,13 @@ class Poll
      *
      * @var bool
      */
-    public bool $is_closed;
+    public ?bool $is_closed;
     /**
      * True, if the poll is anonymous
      *
      * @var bool
      */
-    public bool $is_anonymous;
+    public ?bool $is_anonymous;
     /**
      * Poll type, currently can be “regular” or “quiz”
      *
@@ -51,7 +51,7 @@ class Poll
      *
      * @var bool
      */
-    public bool $allows_multiple_answers;
+    public ?bool $allows_multiple_answers;
     /**
      * Optional. 0-based identifier of the correct answer option. Available only for polls in the quiz mode, which are closed, or was sent (not forwarded) by the bot or to the private chat with the bot.
      *

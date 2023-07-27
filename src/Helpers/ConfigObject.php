@@ -105,6 +105,8 @@ class ConfigObject
         ],
         "Message" => [
             "from" => "User",
+            "new_chat_participant" => "User",
+            "new_chat_member" => "User",
             "sender_chat" => "Chat",
             "forward_from" => "User",
             "forward_from_chat" => "Chat",
@@ -242,12 +244,13 @@ class ConfigObject
             if (is_array($value)) {
                 if (isset($this->types[$this->nameClass][$key])) {
                     $class = $this->types[$this->nameClass][$key];
+                } else if (isset($this->types[$this->getNameClass($object::class)][$key])) {
+                    $class = $this->types[$this->getNameClass($object::class)][$key];
                 } else {
                     if ($key == 'entities') {
                         $object->{$key} = $this->configEntities($value);
                         continue;
                     } else if (isset($value[0])) {
-                        exit(print_r($object::class));
                         $object->{$key} = $this->configArray($value, $object::class);
                         continue;
                     } else {
@@ -255,13 +258,13 @@ class ConfigObject
                     }
                 }
                 $name = '\\Yhyasyrian\\TelegramEasi\\Updates\\' . $class;
-                if (isset($value[0]) and is_array($value[0])) {
+                if ((isset($value[0]) and is_array($value[0])) or $key == 'reply_markup') {
                     $object->{$key} = $this->configArray($value, $name);
                 } else {
                     try {
                         $object->{$key} = $this->configData($value, new $name());
                     } catch (\Throwable $th) {
-                        $object->{$key} = $this->configData($value, new \stdClass());
+                        die(print_r([$th->getMessage(),$key,$class,$value,$object::class]));
                     }
                 }
             } else {

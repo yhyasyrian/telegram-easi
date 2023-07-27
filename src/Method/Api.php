@@ -82,7 +82,7 @@ class Api
     /**
      * Use this method to get current webhook status. Requires no parameters. On success, returns a <a href="#webhookinfo">WebhookInfo</a> object. If the bot is using <a href="#getupdates">getUpdates</a>, will return an object with the <em>url</em> field empty.</p><h4><a class="anchor" name="webhookinfo" href="#webhookinfo"><i class="anchor-icon"></i></a>WebhookInfo</h4><p>Describes the current status of a webhook.
      * @param string $url Webhook URL, may be empty if webhook is not set up
-     * @param bool $has_custom_certificate True, if a custom certificate was provided for webhook certificate checks
+     * @param ?bool $has_custom_certificate True, if a custom certificate was provided for webhook certificate checks
      * @param int $pending_update_count Number of updates awaiting delivery
      * @param string|null $ip_address Optional. Currently used webhook IP address
      * @param int|null $last_error_date Optional. Unix time for the most recent error that happened when trying to deliver an update via webhook
@@ -92,7 +92,7 @@ class Api
      * @param string|null $allowed_updates Optional. A list of update types the bot is subscribed to. Defaults to all update types except chat_member
      * @return Bot
      */
-    public function getWebhookInfo(string $url, bool $has_custom_certificate, int $pending_update_count, string|null $ip_address = '', int|null $last_error_date = 0, string|null $last_error_message = '', int|null $last_synchronization_error_date = 0, int|null $max_connections = 0, ?string $allowed_updates = null): Bot
+    public function getWebhookInfo(string $url, ?bool $has_custom_certificate, int $pending_update_count, string|null $ip_address = '', int|null $last_error_date = 0, string|null $last_error_message = '', int|null $last_synchronization_error_date = 0, int|null $max_connections = 0, ?string $allowed_updates = null): Bot
     {
         return $this->call(['url' => $url, 'has_custom_certificate' => $has_custom_certificate, 'pending_update_count' => $pending_update_count, 'ip_address' => $ip_address, 'last_error_date' => $last_error_date, 'last_error_message' => $last_error_message, 'last_synchronization_error_date' => $last_synchronization_error_date, 'max_connections' => $max_connections, 'allowed_updates' => $allowed_updates,], __FUNCTION__);
     }
@@ -156,21 +156,21 @@ class Api
     }
     /**
      * Represents the rights of an administrator in a chat.
-     * @param bool $is_anonymous True, if the user's presence in the chat is hidden
-     * @param bool $can_manage_chat True, if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege
-     * @param bool $can_delete_messages True, if the administrator can delete messages of other users
-     * @param bool $can_manage_video_chats True, if the administrator can manage video chats
-     * @param bool $can_restrict_members True, if the administrator can restrict, ban or unban chat members
-     * @param bool $can_promote_members True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that they have promoted, directly or indirectly (promoted by administrators that were appointed by the user)
-     * @param bool $can_change_info True, if the user is allowed to change the chat title, photo and other settings
-     * @param bool $can_invite_users True, if the user is allowed to invite new users to the chat
+     * @param ?bool $is_anonymous True, if the user's presence in the chat is hidden
+     * @param ?bool $can_manage_chat True, if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege
+     * @param ?bool $can_delete_messages True, if the administrator can delete messages of other users
+     * @param ?bool $can_manage_video_chats True, if the administrator can manage video chats
+     * @param ?bool $can_restrict_members True, if the administrator can restrict, ban or unban chat members
+     * @param ?bool $can_promote_members True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that they have promoted, directly or indirectly (promoted by administrators that were appointed by the user)
+     * @param ?bool $can_change_info True, if the user is allowed to change the chat title, photo and other settings
+     * @param ?bool $can_invite_users True, if the user is allowed to invite new users to the chat
      * @param bool|null $can_post_messages Optional. True, if the administrator can post in the channel; channels only
      * @param bool|null $can_edit_messages Optional. True, if the administrator can edit messages of other users and can pin messages; channels only
      * @param bool|null $can_pin_messages Optional. True, if the user is allowed to pin messages; groups and supergroups only
      * @param bool|null $can_manage_topics Optional. True, if the user is allowed to create, rename, close, and reopen forum topics; supergroups only
      * @return Bot
      */
-    public function ChatAdministratorRights(bool $is_anonymous, bool $can_manage_chat, bool $can_delete_messages, bool $can_manage_video_chats, bool $can_restrict_members, bool $can_promote_members, bool $can_change_info, bool $can_invite_users, bool|null $can_post_messages = false, bool|null $can_edit_messages = false, bool|null $can_pin_messages = false, bool|null $can_manage_topics = false): Bot
+    public function ChatAdministratorRights(?bool $is_anonymous, ?bool $can_manage_chat, ?bool $can_delete_messages, ?bool $can_manage_video_chats, ?bool $can_restrict_members, ?bool $can_promote_members, ?bool $can_change_info, ?bool $can_invite_users, bool|null $can_post_messages = false, bool|null $can_edit_messages = false, bool|null $can_pin_messages = false, bool|null $can_manage_topics = false): Bot
     {
         return $this->call(['is_anonymous' => $is_anonymous, 'can_manage_chat' => $can_manage_chat, 'can_delete_messages' => $can_delete_messages, 'can_manage_video_chats' => $can_manage_video_chats, 'can_restrict_members' => $can_restrict_members, 'can_promote_members' => $can_promote_members, 'can_change_info' => $can_change_info, 'can_invite_users' => $can_invite_users, 'can_post_messages' => $can_post_messages, 'can_edit_messages' => $can_edit_messages, 'can_pin_messages' => $can_pin_messages, 'can_manage_topics' => $can_manage_topics,], __FUNCTION__);
     }
@@ -1363,13 +1363,13 @@ class Api
      * @param string $name Sticker set name
      * @param string $title Sticker set title
      * @param string $sticker_type Type of stickers in the set, currently one of “regular”, “mask”, “custom_emoji”
-     * @param bool $is_animated True, if the sticker set contains animated stickers
-     * @param bool $is_video True, if the sticker set contains video stickers
+     * @param ?bool $is_animated True, if the sticker set contains animated stickers
+     * @param ?bool $is_video True, if the sticker set contains video stickers
      * @param string $stickers List of all set stickers
      * @param string|array|null $thumbnail Optional. Sticker set thumbnail in the .WEBP, .TGS, or .WEBM format
      * @return Bot
      */
-    public function StickerSet(string $name, string $title, string $sticker_type, bool $is_animated, bool $is_video, string|array|null $thumbnail, ?string $stickers = null): Bot
+    public function StickerSet(string $name, string $title, string $sticker_type, ?bool $is_animated, ?bool $is_video, string|array|null $thumbnail, ?string $stickers = null): Bot
     {
         return $this->call(['name' => $name, 'title' => $title, 'sticker_type' => $sticker_type, 'is_animated' => $is_animated, 'is_video' => $is_video, 'stickers' => $stickers, 'thumbnail' => $thumbnail,], __FUNCTION__);
     }
@@ -2080,23 +2080,23 @@ class Api
     /**
      * If you sent an invoice requesting a shipping address and the parameter <em>is_flexible</em> was specified, the Bot API will send an <a href="#update">Update</a> with a <em>shipping_query</em> field to the bot. Use this method to reply to shipping queries. On success, <em>True</em> is returned.
      * @param string $shipping_query_id YesUnique identifier for the query to be answered
-     * @param bool $ok YesPass True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible)
+     * @param ?bool $ok YesPass True if delivery to the specified address is possible and False if there are any problems (for example, if delivery to the specified address is not possible)
      * @param string|null $shipping_options OptionalRequired if ok is True. A JSON-serialized array of available shipping options.
      * @param string|null $error_message OptionalRequired if ok is False. Error message in human readable form that explains why it is impossible to complete the order (e.g. "Sorry, delivery to your desired address is unavailable'). Telegram will display this message to the user.
      * @return Bot
      */
-    public function answerShippingQuery(string $shipping_query_id, bool $ok, ?string $shipping_options = null, string|null $error_message = ''): Bot
+    public function answerShippingQuery(string $shipping_query_id, ?bool $ok, ?string $shipping_options = null, string|null $error_message = ''): Bot
     {
         return $this->call(['shipping_query_id' => $shipping_query_id, 'ok' => $ok, 'shipping_options' => $shipping_options, 'error_message' => $error_message,], __FUNCTION__);
     }
     /**
      * Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an <a href="#update">Update</a> with the field <em>pre_checkout_query</em>. Use this method to respond to such pre-checkout queries. On success, <em>True</em> is returned. <strong>Note:</strong> The Bot API must receive an answer within 10 seconds after the pre-checkout query was sent.
      * @param string $pre_checkout_query_id YesUnique identifier for the query to be answered
-     * @param bool $ok YesSpecify True if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order. Use False if there are any problems.
+     * @param ?bool $ok YesSpecify True if everything is alright (goods are available, etc.) and the bot is ready to proceed with the order. Use False if there are any problems.
      * @param string|null $error_message OptionalRequired if ok is False. Error message in human readable form that explains the reason for failure to proceed with the checkout (e.g. "Sorry, somebody just bought the last of our amazing black T-shirts while you were busy filling out your payment details. Please choose a different color or garment!"). Telegram will display this message to the user.
      * @return Bot
      */
-    public function answerPreCheckoutQuery(string $pre_checkout_query_id, bool $ok, string|null $error_message = ''): Bot
+    public function answerPreCheckoutQuery(string $pre_checkout_query_id, ?bool $ok, string|null $error_message = ''): Bot
     {
         return $this->call(['pre_checkout_query_id' => $pre_checkout_query_id, 'ok' => $ok, 'error_message' => $error_message,], __FUNCTION__);
     }

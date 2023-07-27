@@ -21,19 +21,19 @@ class ChatInviteLink
      *
      * @var bool
      */
-    public bool $creates_join_request;
+    public ?bool $creates_join_request;
     /**
      * True, if the link is primary
      *
      * @var bool
      */
-    public bool $is_primary;
+    public ?bool $is_primary;
     /**
      * True, if the link is revoked
      *
      * @var bool
      */
-    public bool $is_revoked;
+    public ?bool $is_revoked;
     /**
      * Optional. Invite link name
      *

@@ -21,55 +21,55 @@ class ChatMemberAdministrator extends ChatMemberOwner
      *
      * @var bool
      */
-    public bool $can_be_edited;
+    public ?bool $can_be_edited;
     /**
      * True, if the user's presence in the chat is hidden
      *
      * @var bool
      */
-    public bool $is_anonymous;
+    public ?bool $is_anonymous;
     /**
      * True, if the administrator can access the chat event log, chat statistics, message statistics in channels, see channel members, see anonymous administrators in supergroups and ignore slow mode. Implied by any other administrator privilege
      *
      * @var bool
      */
-    public bool $can_manage_chat;
+    public ?bool $can_manage_chat;
     /**
      * True, if the administrator can delete messages of other users
      *
      * @var bool
      */
-    public bool $can_delete_messages;
+    public ?bool $can_delete_messages;
     /**
      * True, if the administrator can manage video chats
      *
      * @var bool
      */
-    public bool $can_manage_video_chats;
+    public ?bool $can_manage_video_chats;
     /**
      * True, if the administrator can restrict, ban or unban chat members
      *
      * @var bool
      */
-    public bool $can_restrict_members;
+    public ?bool $can_restrict_members;
     /**
      * True, if the administrator can add new administrators with a subset of their own privileges or demote administrators that they have promoted, directly or indirectly (promoted by administrators that were appointed by the user)
      *
      * @var bool
      */
-    public bool $can_promote_members;
+    public ?bool $can_promote_members;
     /**
      * True, if the user is allowed to change the chat title, photo and other settings
      *
      * @var bool
      */
-    public bool $can_change_info;
+    public ?bool $can_change_info;
     /**
      * True, if the user is allowed to invite new users to the chat
      *
      * @var bool
      */
-    public bool $can_invite_users;
+    public ?bool $can_invite_users;
     /**
      * Optional. True, if the administrator can post in the channel; channels only
      *

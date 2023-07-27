@@ -39,13 +39,13 @@ class Sticker
      *
      * @var bool
      */
-    public bool $is_animated;
+    public ?bool $is_animated;
     /**
      * True, if the sticker is a video sticker
      *
      * @var bool
      */
-    public bool $is_video;
+    public ?bool $is_video;
     /**
      * Optional. Sticker thumbnail in the .WEBP or .JPG format
      *
