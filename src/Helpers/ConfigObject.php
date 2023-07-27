@@ -2,6 +2,8 @@
 
 namespace Yhyasyrian\TelegramEasi\Helpers;
 
+use Exception;
+
 class ConfigObject
 {
     /**
@@ -106,6 +108,7 @@ class ConfigObject
         "Message" => [
             "from" => "User",
             "new_chat_participant" => "User",
+            "left_chat_participant" => "User",
             "new_chat_member" => "User",
             "sender_chat" => "Chat",
             "forward_from" => "User",
@@ -264,7 +267,7 @@ class ConfigObject
                     try {
                         $object->{$key} = $this->configData($value, new $name());
                     } catch (\Throwable $th) {
-                        die(print_r([$th->getMessage(),$key,$class,$value,$object::class]));
+                        throw new Exception($th->getMessage() . " The Class isn't found");
                     }
                 }
             } else {
