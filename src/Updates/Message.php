@@ -29,11 +29,17 @@ class Message
      */
     public User|null $new_chat_participant;
     /**
-     * Optional. New member in group.
+     * Optional. A bot was add from the group, information about them (this bot may be the bot itself)
      *
      * @var User|null
      */
     public User|null $new_chat_member;
+    /**
+     * Optional. A bot was removed from the group, information about them (this bot may be the bot itself)
+     *
+     * @var User|null
+     */
+    public User|null $left_chat_participant;
     /**
      * Optional. Sender of the message, sent on behalf of a chat. For example, the channel itself for channel posts, the supergroup itself for messages from anonymous group administrators, the linked channel for messages automatically forwarded to the discussion group. For backward compatibility, the field from contains a fake sender user in non-channel chats, if the message was sent on behalf of a chat.
      *
