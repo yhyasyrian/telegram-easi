@@ -18,6 +18,7 @@ class GetUpdate extends Api
     public function startBot(object|callable|string $callable): void
     {
         if (PHP_SAPI == 'cli') {
+            $this->deleteWebhook();
             $Update = new Update();
             $Update->update_id = 0;
             while (true) {
