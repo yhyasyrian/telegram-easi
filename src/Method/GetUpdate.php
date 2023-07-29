@@ -69,7 +69,7 @@ class GetUpdate extends Api
         if (is_object($callable) and !is_callable($callable)) {
             if (isset($Update->message)) {
                 try {
-                    $callable->isNewMessage(Update:$Update->message,Api:$this);
+                    $callable->isNewMessage(Update:$Update->message);
                 } catch (\Throwable $th) {}
             } else if ($Update->edited_message) {
                 try {
