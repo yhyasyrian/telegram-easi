@@ -92,9 +92,9 @@ class Api
      * @param string|null $allowed_updates Optional. A list of update types the bot is subscribed to. Defaults to all update types except chat_member
      * @return Bot
      */
-    public function getWebhookInfo(string $url, ?bool $has_custom_certificate, int $pending_update_count, string|null $ip_address = '', int|null $last_error_date = 0, string|null $last_error_message = '', int|null $last_synchronization_error_date = 0, int|null $max_connections = 0, ?string $allowed_updates = null): Bot
+    public function getWebhookInfo(): Bot
     {
-        return $this->call(['url' => $url, 'has_custom_certificate' => $has_custom_certificate, 'pending_update_count' => $pending_update_count, 'ip_address' => $ip_address, 'last_error_date' => $last_error_date, 'last_error_message' => $last_error_message, 'last_synchronization_error_date' => $last_synchronization_error_date, 'max_connections' => $max_connections, 'allowed_updates' => $allowed_updates,], __FUNCTION__);
+        return $this->call([], __FUNCTION__);
     }
     /**
      * This object represents a unique message identifier.

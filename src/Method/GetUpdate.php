@@ -65,26 +65,26 @@ class GetUpdate extends Api
         } else if (is_string($callable) and class_exists($callable)) {
             $callable = new $callable();
         }
-        if (is_object($callable)) {
+        if (is_object($callable) and !is_callable($callable)) {
             if (isset($Update->message)) {
                 try {
                     $callable->isNewMessage(Update:$Update->message,Api:$this);
                 } catch (\Throwable $th) {}
             } else if ($Update->edited_message) {
                 try {
-                    $callable->isEditMessage(Update:$Update->edited_message,Api:$this);
+                    $callable->isEditMessage(Update:$Update->edited_message);
                 } catch (\Throwable $th) {}
             } else if ($Update->channel_post) {
                 try {
-                    $callable->isNewChannelMessage(Update:$Update->channel_post,Api:$this);
+                    $callable->isNewChannelMessage(Update:$Update->channel_post);
                 } catch (\Throwable $th) {}
             } else if ($Update->callback_query) {
                 try {
-                    $callable->isCallBack(Update:$Update->callback_query,Api:$this);
+                    $callable->isCallBack(Update:$Update->callback_query);
                 } catch (\Throwable $th) {}
             } else if ($Update->edited_channel_post) {
                 try {
-                    $callable->isEditChannelMessage(Update:$Update->edited_channel_post,Api:$this);
+                    $callable->isEditChannelMessage(Update:$Update->edited_channel_post);
                 } catch (\Throwable $th) {}
             } else {
                 $callable->isAny(Update:$Update);
