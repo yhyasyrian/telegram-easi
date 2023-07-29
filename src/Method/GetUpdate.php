@@ -2,6 +2,7 @@
 
 namespace Yhyasyrian\TelegramEasi\Method;
 
+use Exception;
 use Yhyasyrian\TelegramEasi\Helpers\ConfigObject;
 use Yhyasyrian\TelegramEasi\Updates\Update;
 
@@ -10,19 +11,29 @@ class GetUpdate extends Api
     /**
      * Start the bot with CLI
      * 
+     * @param callable $callable
+     * 
      * @return void
      */
-    public function startBot(callable $callable): void
+    public function startBot(object|callable|string $callable): void
     {
-        $update = new Update();
-        $update->update_id = 0;
-        while (true) {
-            $offset = $update->update_id ?? 0;
-            $update = $this->getUpdate(offset: ($offset + 1));
-            if (empty($update)) {
-                continue;
+        if (PHP_SAPI == 'cli') {
+            $Update = new Update();
+            $Update->update_id = 0;
+            while (true) {
+                $offset = $Update->update_id ?? 0;
+                $Update = $this->getUpdate(offset: ($offset + 1));
+                if (empty($Update)) {
+                    continue;
+                }
+                $this->eventTelegram(callable:$callable,Update:$Update);
             }
-            $callable(Update:$update,Api:$this);
+        } else {
+            $Update = file_get_contents('php://input');
+            if (!empty($Update)) {
+                $Update = (new ConfigObject(\Yhyasyrian\TelegramEasi\Updates\Update::class, json_decode($Update,1)))->getUpdate();
+                $this->eventTelegram(callable:$callable,Update:$Update);
+            }
         }
     }
     /**
@@ -40,6 +51,46 @@ class GetUpdate extends Api
             return (new ConfigObject(\Yhyasyrian\TelegramEasi\Updates\Update::class, $update->result[0]))->getUpdate();
         } else {
             return null;
+        }
+    }
+    /**
+     * Start function bot
+     * 
+     * @param object|callable $callable fot run bot
+     * @return void
+     */
+     private function eventTelegram(object|callable|string $callable,Update $Update) :void {
+        if (is_string($callable) and !class_exists($callable)) {
+            throw new Exception("The param \$callable must be object|callable for run");
+        } else if (is_string($callable) and class_exists($callable)) {
+            $callable = new $callable();
+        }
+        if (is_object($callable)) {
+            if (isset($Update->message)) {
+                try {
+                    $callable->isNewMessage(Update:$Update->message,Api:$this);
+                } catch (\Throwable $th) {}
+            } else if ($Update->edited_message) {
+                try {
+                    $callable->isEditMessage(Update:$Update->edited_message,Api:$this);
+                } catch (\Throwable $th) {}
+            } else if ($Update->channel_post) {
+                try {
+                    $callable->isNewChannelMessage(Update:$Update->channel_post,Api:$this);
+                } catch (\Throwable $th) {}
+            } else if ($Update->callback_query) {
+                try {
+                    $callable->isCallBack(Update:$Update->callback_query,Api:$this);
+                } catch (\Throwable $th) {}
+            } else if ($Update->edited_channel_post) {
+                try {
+                    $callable->isEditChannelMessage(Update:$Update->edited_channel_post,Api:$this);
+                } catch (\Throwable $th) {}
+            } else {
+                $callable->isAny(Update:$Update);
+            }
+        } else {
+            $callable(Update:$Update,Api:$this);
         }
     }
 }

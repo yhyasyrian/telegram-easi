@@ -58,4 +58,10 @@ class Audio
      * @var PhotoSize|null
      */
     public PhotoSize|null $thumbnail;
+    /**
+     * Optional. Thumbnail of the album cover to which the music file belongs
+     *
+     * @var PhotoSize|null
+     */
+    public PhotoSize|null $thumb;
 }

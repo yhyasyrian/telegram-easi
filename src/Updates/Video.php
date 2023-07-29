@@ -41,6 +41,12 @@ class Video
      */
     public PhotoSize|null $thumbnail;
     /**
+     * Optional. Video thumbnail
+     *
+     * @var PhotoSize|null
+     */
+    public PhotoSize|null $thumb;
+    /**
      * Optional. Original filename as defined by sender
      *
      * @var string|null

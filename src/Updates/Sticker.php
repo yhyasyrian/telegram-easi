@@ -53,6 +53,12 @@ class Sticker
      */
     public PhotoSize|null $thumbnail;
     /**
+     * Optional. Sticker thumbnail in the .WEBP or .JPG format
+     *
+     * @var PhotoSize|null
+     */
+    public PhotoSize|null $thumb;
+    /**
      * Optional. Emoji associated with the sticker
      *
      * @var string|null

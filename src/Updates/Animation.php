@@ -41,6 +41,12 @@ class Animation
      */
     public PhotoSize|null $thumbnail;
     /**
+     * Optional. Animation thumbnail as defined by sender
+     *
+     * @var PhotoSize|null
+     */
+    public PhotoSize|null $thumb;
+    /**
      * Optional. Original animation filename as defined by sender
      *
      * @var string|null

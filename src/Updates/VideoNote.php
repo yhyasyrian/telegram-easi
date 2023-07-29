@@ -35,6 +35,12 @@ class VideoNote
      */
     public PhotoSize|null $thumbnail;
     /**
+     * Optional. Video thumbnail
+     *
+     * @var PhotoSize|null
+     */
+    public PhotoSize|null $thumb;
+    /**
      * Optional. File size in bytes
      *
      * @var int|null

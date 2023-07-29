@@ -23,6 +23,12 @@ class Document
      */
     public PhotoSize|null $thumbnail;
     /**
+     * Optional. Document thumbnail as defined by sender
+     *
+     * @var PhotoSize|null
+     */
+    public PhotoSize|null $thumb;
+    /**
      * Optional. Original filename as defined by sender
      *
      * @var string|null
