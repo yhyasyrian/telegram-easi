@@ -60,7 +60,7 @@ class GetUpdate extends Api
      * @param object|callable $callable fot run bot
      * @return void
      */
-     private function eventTelegram(object|callable|string $callable,Update $Update) :void {
+    private function eventTelegram(object|callable|string $callable,Update $Update) :void {
         if (is_string($callable) and !class_exists($callable)) {
             throw new Exception("The param \$callable must be object|callable for run");
         } else if (is_string($callable) and class_exists($callable)) {
