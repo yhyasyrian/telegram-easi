@@ -1,41 +1,27 @@
 <?php
-use Yhyasyrian\TelegramEasi\Helpers\ConfigObject;
-use Yhyasyrian\TelegramEasi\Updates\Update;
-use Yhyasyrian\TelegramEasi\Updates\User;
-
-// use \Yhyasyrian\TelegramEasi\Updates\Message;
-require_once __DIR__.'/../src/Updates/Update.php';
-require_once __DIR__.'/../src/Helpers/ConfigObject.php';
-$update  = json_decode('{
-    "update_id": 926023860,
-    "message": {
-        "message_id": 28789,
-        "from": {
-            "id": 809064751,
-            "is_bot": false,
-            "first_name": "ᯓ ˹𝚈𝙷𝚈𝙰",
-            "last_name": "𝚂𝚈𝚁𝙸𝙰𝙽˼ ༆",
-            "username": "KKYKKN",
-            "language_code": "ar",
-            "is_premium": true
-        },
-        "chat": {
-            "id": 809064751,
-            "first_name": "ᯓ ˹𝚈𝙷𝚈𝙰",
-            "last_name": "𝚂𝚈𝚁𝙸𝙰𝙽˼ ༆",
-            "username": "KKYKKN",
-            "type": "private"
-        },
-        "date": 1689537815,
-        "text": "update"
+require __DIR__.'/../vendor/autoload.php';
+class Events extends \Yhyasyrian\TelegramEasi\Method\GetUpdate {
+    public function isNewMessage(\Yhyasyrian\TelegramEasi\Updates\Message $Update) {
+        throw new Exception("Error Processing Request", 1);
     }
-}',1);
-try {
-    $ConfigObject = new ConfigObject(Update::class,$update);
-    /**
-     * @var Update
-     */
-    $update = $ConfigObject->getResult();
-} catch (\Throwable $th) {
-   print_r($th);
+    public function isEditMessage (\Yhyasyrian\TelegramEasi\Updates\Message $Update) {
+        // $Update = $Update->edited_message
+    }
+    public function isNewChannelMessage (\Yhyasyrian\TelegramEasi\Updates\Message $Update) {
+        // $Update = $Update->channel_post
+    }
+    public function isEditChannelMessage (\Yhyasyrian\TelegramEasi\Updates\Message $Update) {
+        // $Update = $Update->edited_channel_post
+    }
+    public function isCallBack (\Yhyasyrian\TelegramEasi\Updates\CallbackQuery $Update) {
+        // $Update = $Update->callback_query;
+    }
+    public function isAny (\Yhyasyrian\TelegramEasi\Updates\Update $Update) {
+        // $Update = $Update
+    }
+    public function getError(\Throwable $th) {
+        print_r($th);
+    }
 }
+$class = new Events(token:'1913366661:AAHSCDpWsZWUOyfPq0iMuBq3fcGvBj2eXTI',request :file_get_contents::class);
+$class->startBot($class);

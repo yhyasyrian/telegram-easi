@@ -70,30 +70,53 @@ class GetUpdate extends Api
             if (isset($Update->message)) {
                 try {
                     $callable->isNewMessage(Update:$Update->message);
-                } catch (\Throwable $th) {}
+                } catch (\Throwable $th) { $this->error_log($callable,$th); }
             } else if (isset($Update->edited_message)) {
                 try {
                     $callable->isEditMessage(Update:$Update->edited_message);
-                } catch (\Throwable $th) {}
+                } catch (\Throwable $th) { $this->error_log($callable,$th); }
             } else if (isset($Update->channel_post)) {
                 try {
                     $callable->isNewChannelMessage(Update:$Update->channel_post);
-                } catch (\Throwable $th) {}
+                } catch (\Throwable $th) { $this->error_log($callable,$th); }
             } else if (isset($Update->callback_query)) {
                 try {
                     $callable->isCallBack(Update:$Update->callback_query);
-                } catch (\Throwable $th) {}
+                } catch (\Throwable $th) { $this->error_log($callable,$th); }
             } else if (isset($Update->edited_channel_post)) {
                 try {
                     $callable->isEditChannelMessage(Update:$Update->edited_channel_post);
-                } catch (\Throwable $th) {}
+                } catch (\Throwable $th) { $this->error_log($callable,$th); }
             } else {
                 try {
                     $callable->isAny(Update:$Update);
-                } catch (\Throwable $th) {}
+                } catch (\Throwable $th) { $this->error_log($callable,$th); }
             }
         } else {
             $callable(Update:$Update,Api:$this);
+        }
+    }
+    /**
+     * error log
+     * 
+     * @param object $callable fot run bot
+     * @param \Throwable $error fot run bot
+     * @return void
+     */
+    private function error_log(object $callable,\Throwable $error) : void {
+        $functions = [
+           'isNewMessage',
+           'isEditMessage',
+           'isNewChannelMessage',
+           'isEditChannelMessage',
+           'isCallBack',
+           'isAny',
+        ];
+        if (!preg_match('/Call to undefined method .*?::('.implode("|",$functions).')/',$error->getMessage())) {
+            try {
+                echo "true";
+                $callable->getError($error);
+            } catch (\Throwable $th) {}
         }
     }
 }
