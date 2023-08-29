@@ -2307,4 +2307,18 @@ class Api
     public function editMessageText(int|string|null $chat_id, int|null $message_id = 0, string|null $inline_message_id = '', string $text, string|null $parse_mode = '', ?array $entities = [], bool|null $disable_web_page_preview = false, string|null $reply_markup) :Bot {
         return $this->call(['chat_id' => $chat_id,'message_id' => $message_id,'inline_message_id' => $inline_message_id,'text' => $text,'parse_mode' => $parse_mode,'entities' => $entities,'disable_web_page_preview' => $disable_web_page_preview,'reply_markup' => $reply_markup,], __FUNCTION__);
     }
+    /**
+        * Use this method to forward messages of any kind. Service messages can't be forwarded. On success, the sent <a href="#message">Message</a> is returned.
+        * @param Integer or String $chat_id YesUnique identifier for the target chat or username of the target channel (in the format @channelusername)
+        * @param int|null $message_thread_id OptionalUnique identifier for the target message thread (topic) of the forum; for forum supergroups only
+        * @param Integer or String $from_chat_id YesUnique identifier for the chat where the original message was sent (or channel username in the format @channelusername)
+        * @param bool|null $disable_notification OptionalSends the message silently. Users will receive a notification with no sound.
+        * @param bool|null $protect_content OptionalProtects the contents of the forwarded message from forwarding and saving
+        * @param int $message_id YesMessage identifier in the chat specified in from_chat_id
+        * @return Bot
+    */
+    public function forwardMessage(int|string $chat_id, int|null $message_thread_id = 0, int|string $from_chat_id, bool|null $disable_notification = false, bool|null $protect_content = false, int $message_id) :Bot {
+        return $this->call(['chat_id' => $chat_id,'message_thread_id' => $message_thread_id,'from_chat_id' => $from_chat_id,'disable_notification' => $disable_notification,'protect_content' => $protect_content,'message_id' => $message_id,], __FUNCTION__);
+    }
+
 }
