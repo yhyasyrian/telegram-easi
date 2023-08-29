@@ -2292,4 +2292,19 @@ class Api
     {
         return $this->call([],__FUNCTION__);
     }
+    /**
+        * Use this method to edit text and <a href="#games">game</a> messages. On success, if the edited message is not an inline message, the edited <a href="#message">Message</a> is returned, otherwise <em>True</em> is returned.
+        * @param Integer or String|null $chat_id OptionalRequired if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        * @param int|null $message_id OptionalRequired if inline_message_id is not specified. Identifier of the message to edit
+        * @param string|null $inline_message_id OptionalRequired if chat_id and message_id are not specified. Identifier of the inline message
+        * @param string $text YesNew text of the message, 1-4096 characters after entities parsing
+        * @param string|null $parse_mode OptionalMode for parsing entities in the message text. See formatting options for more details.
+        * @param array<MessageEntity>|null $entities OptionalA JSON-serialized list of special entities that appear in message text, which can be specified instead of parse_mode
+        * @param bool|null $disable_web_page_preview OptionalDisables link previews for links in this message
+        * @param InlineKeyboardMarkup|null $reply_markup OptionalA JSON-serialized object for an inline keyboard.
+        * @return Bot
+    */
+    public function editMessageText(int|string|null $chat_id, int|null $message_id = 0, string|null $inline_message_id = '', string $text, string|null $parse_mode = '', ?array $entities = [], bool|null $disable_web_page_preview = false, string|null $reply_markup) :Bot {
+        return $this->call(['chat_id' => $chat_id,'message_id' => $message_id,'inline_message_id' => $inline_message_id,'text' => $text,'parse_mode' => $parse_mode,'entities' => $entities,'disable_web_page_preview' => $disable_web_page_preview,'reply_markup' => $reply_markup,], __FUNCTION__);
+    }
 }
