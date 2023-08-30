@@ -114,7 +114,6 @@ class GetUpdate extends Api
         ];
         if (!preg_match('/Call to undefined method .*?::('.implode("|",$functions).')/',$error->getMessage())) {
             try {
-                echo "true";
                 $callable->getError($error);
             } catch (\Throwable $th) {}
         }
