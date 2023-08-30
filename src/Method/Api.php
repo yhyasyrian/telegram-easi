@@ -2304,7 +2304,7 @@ class Api
         * @param InlineKeyboardMarkup|null $reply_markup OptionalA JSON-serialized object for an inline keyboard.
         * @return Bot
     */
-    public function editMessageText(int|string|null $chat_id, int|null $message_id = 0, string|null $inline_message_id = '', string $text, string|null $parse_mode = '', ?array $entities = [], bool|null $disable_web_page_preview = false, string|null $reply_markup) :Bot {
+    public function editMessageText(int|string|null $chat_id, string $text, int|null $message_id = 0, string|null $inline_message_id = '', string|null $parse_mode = '', ?array $entities = [], bool|null $disable_web_page_preview = false, string|null $reply_markup = '') :Bot {
         return $this->call(['chat_id' => $chat_id,'message_id' => $message_id,'inline_message_id' => $inline_message_id,'text' => $text,'parse_mode' => $parse_mode,'entities' => $entities,'disable_web_page_preview' => $disable_web_page_preview,'reply_markup' => $reply_markup,], __FUNCTION__);
     }
     /**
@@ -2317,8 +2317,7 @@ class Api
         * @param int $message_id YesMessage identifier in the chat specified in from_chat_id
         * @return Bot
     */
-    public function forwardMessage(int|string $chat_id, int|null $message_thread_id = 0, int|string $from_chat_id, bool|null $disable_notification = false, bool|null $protect_content = false, int $message_id) :Bot {
+    public function forwardMessage(int|string $chat_id, int $message_id, int|string $from_chat_id, int|null $message_thread_id = 0, bool|null $disable_notification = false, bool|null $protect_content = false) :Bot {
         return $this->call(['chat_id' => $chat_id,'message_thread_id' => $message_thread_id,'from_chat_id' => $from_chat_id,'disable_notification' => $disable_notification,'protect_content' => $protect_content,'message_id' => $message_id,], __FUNCTION__);
     }
-
 }
