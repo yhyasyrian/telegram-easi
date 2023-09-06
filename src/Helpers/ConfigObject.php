@@ -2,8 +2,6 @@
 
 namespace Yhyasyrian\TelegramEasi\Helpers;
 
-use Exception;
-
 class ConfigObject
 {
     /**
@@ -260,6 +258,10 @@ class ConfigObject
                         $class = $key;
                     }
                 }
+                if ($class == 'InlineKeyboardMarkup') {
+                    $object->{$key} = $this->configInlineKeyboardMarkup($value);
+                    continue;
+                }
                 $name = '\\Yhyasyrian\\TelegramEasi\\Updates\\' . $class;
                 if ((isset($value[0]) and is_array($value[0])) or $key == 'reply_markup') {
                     $object->{$key} = $this->configArray($value, $name);
@@ -267,7 +269,8 @@ class ConfigObject
                     try {
                         $object->{$key} = $this->configData($value, new $name());
                     } catch (\Throwable $th) {
-                        throw new Exception($th->getMessage() . " The Class isn't found");
+                        print_r($th);
+                        // throw new Exception($th->getMessage() . " The Class isn't found");
                     }
                 }
             } else {
@@ -300,6 +303,16 @@ class ConfigObject
         $MessageEntity = [];
         foreach ($array as $key => $value) {
             $MessageEntity[] = $this->configData($value, (new $name()));
+        }
+        return $MessageEntity;
+    }
+    public function configInlineKeyboardMarkup($array) {
+        $MessageEntity = [];
+        require_once __DIR__.'/../Updates/InlineKeyboardButton.php';
+        foreach ($array as $key => $value) {
+            foreach ($value as $Key => $Value) {
+                $MessageEntity[$key][$Key] = $this->configArray($Value,\YhyaSyrian\TelegramEasi\Updates\InlineKeyboardButton::class);
+            }
         }
         return $MessageEntity;
     }
